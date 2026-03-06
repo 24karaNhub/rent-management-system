@@ -38,6 +38,7 @@ public class TenantService {
         existing.setPhone(tenant.getPhone());
         existing.setRent(tenant.getRent());
         existing.setLandlord(tenant.getLandlord());
+        existing.setProperty(tenant.getProperty());
         return tenantRepo.save(existing);
 
     }

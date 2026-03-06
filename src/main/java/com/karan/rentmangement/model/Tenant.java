@@ -26,6 +26,9 @@ public class Tenant {
     @ManyToOne
     @JoinColumn(name="landlord_id")
     private Landlord landlord;
+    @ManyToOne
+    @JoinColumn(name = "property_id")
+    private Property property;
     public Tenant() {
 
     }
@@ -72,5 +75,11 @@ public class Tenant {
     }
     public void setLandlord(Landlord landlord) {
         this.landlord = landlord;
+    }
+    public Property getProperty(){
+        return property;
+    }
+    public void setProperty(Property property){
+        this.property=property;
     }
 }
