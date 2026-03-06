@@ -15,6 +15,7 @@ public class Landlord {
     private String name ;
     private String email;
     private String phone;
+    
     public Landlord( String name, String email, String phone) {
        
         this.name = name;
@@ -24,7 +25,8 @@ public class Landlord {
 
     @OneToMany(mappedBy = "landlord")
     private List<Tenant> tenants;
-   
+    @OneToMany(mappedBy = "landlord")
+    private List<Property> property;
 
     public Landlord() {
 
