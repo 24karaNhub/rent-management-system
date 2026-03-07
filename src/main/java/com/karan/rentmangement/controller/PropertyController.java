@@ -2,6 +2,7 @@ package com.karan.rentmangement.controller;
 import com.karan.rentmangement.service.PropertyService;
 import com.karan.rentmangement.model.Property;
 import com.karan.rentmangement.model.Tenant;
+import com.karan.rentmangement.model.rentPayment;
 
 import java.util.List;
 
@@ -42,4 +43,8 @@ public class PropertyController {
     public List<Tenant> getTenantsOfProperty(@PathVariable int id){
     return propertyService.getTenantsOfProperty(id);
     }
+    @GetMapping("/{id}/payments")
+    public List<rentPayment> getPaymentsOfProperty(@PathVariable int id){
+        return propertyService.getPaymentsOfProperty(id);
+}
 }

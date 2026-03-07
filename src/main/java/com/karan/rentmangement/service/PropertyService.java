@@ -1,8 +1,11 @@
 package com.karan.rentmangement.service;
 import com.karan.rentmangement.repository.TenantRepo;
+import com.karan.rentmangement.repository.rentPaymentRepo;
+
 import org.springframework.stereotype.Service;
 import com.karan.rentmangement.model.Property;
 import com.karan.rentmangement.model.Tenant;
+import com.karan.rentmangement.model.rentPayment;
 import com.karan.rentmangement.model.Property;
 import com.karan.rentmangement.repository.PropertyRepo;
 import com.karan.rentmangement.model.Property;
@@ -13,9 +16,11 @@ public class PropertyService {
 
     private final TenantRepo tenantRepo;
     private final PropertyRepo propertyRepo;
-    public PropertyService(PropertyRepo propertyRepo, TenantRepo tenantRepo){
+    private final rentPaymentRepo rentpaymentRepo;
+    public PropertyService(PropertyRepo propertyRepo, TenantRepo tenantRepo, rentPaymentRepo rentpaymentRepo){
         this.propertyRepo=propertyRepo;
         this.tenantRepo = tenantRepo;
+        this.rentpaymentRepo=rentpaymentRepo;
     }
     public Property createProperty(Property property){
         return propertyRepo.save(property);
@@ -55,5 +60,12 @@ public class PropertyService {
             .orElseThrow(() -> new RuntimeException("Property not found"));
 
     return tenantRepo.findByProperty(property);
+}
+public List<rentPayment> getPaymentsOfProperty(int id){
+
+    Property property = propertyRepo.findById(id)
+            .orElseThrow(() -> new RuntimeException("Property not found"));
+
+    return rentpaymentRepo.findByProperty(property);
 }
 }
