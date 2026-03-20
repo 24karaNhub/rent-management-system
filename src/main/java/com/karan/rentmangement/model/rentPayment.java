@@ -5,6 +5,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.JoinColumn;
 
 import java.time.Month;
@@ -16,11 +19,12 @@ public class rentPayment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
+    @Min(value = 1, message = "Rent must be greater than 0")
+    @NotNull(message = "Rent should not be blank")
     private long amount;
-
+    @NotNull(message = "Month should not be blank")
     private Month month;
-
+    @NotBlank(message = "Status should not be blank")
     private String status;
 
     private LocalDate date;
@@ -32,6 +36,9 @@ public class rentPayment {
     @ManyToOne
     @JoinColumn(name = "property_id")
     private Property property;
+    @ManyToOne
+    @JoinColumn(name = "tenant_id")
+    private Tenant tenant;
 
     public rentPayment(long amount, Month month, String status, LocalDate date) {
         this.amount = amount;
@@ -102,5 +109,12 @@ public class rentPayment {
 
     public void setProperty(Property property) {
         this.property = property;
+    }
+    public Tenant getTenant() {
+    return tenant;
+}
+
+    public void setTenant(Tenant tenant) {
+        this.tenant = tenant;
     }
 }

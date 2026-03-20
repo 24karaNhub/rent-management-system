@@ -1,5 +1,8 @@
 package com.karan.rentmangement.controller;
 import com.karan.rentmangement.service.PropertyService;
+
+import jakarta.validation.Valid;
+
 import com.karan.rentmangement.model.Property;
 import com.karan.rentmangement.model.Tenant;
 import com.karan.rentmangement.model.rentPayment;
@@ -23,15 +26,19 @@ public class PropertyController {
         this.propertyService=propertyService;
     }
     @PostMapping("/addProperty")
-    public Property createProperty(@RequestBody Property property){
+    public Property createProperty(@RequestBody  @Valid Property property){
         return propertyService.createProperty(property);
     }
     @GetMapping
     public List<Property> getallProperties(){
         return propertyService.getAllProperty();
     }
+    @GetMapping("/{id}")
+    public Property getbyid(@PathVariable int id ){
+        return propertyService.getById(id);
+    }
     @PutMapping("/{id}")
-    public Property updateProperty(@PathVariable int id, @RequestBody Property property){
+    public Property updateProperty(@PathVariable int id, @RequestBody @Valid Property property){
         return propertyService.updateProperty(id, property);
     }
     @DeleteMapping("/{id}")        // ✅ added delete

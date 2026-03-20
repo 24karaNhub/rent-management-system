@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import com.karan.rentmangement.service.*;
+
+import jakarta.validation.Valid;
+
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @RestController
@@ -19,7 +22,7 @@ public class LandlordController {
         this.landlordService=landlordService;
     }
     @PostMapping("/addlandlord")
-    public Landlord createLandlord(@RequestBody Landlord landlord) {
+    public Landlord createLandlord(@RequestBody  @Valid Landlord landlord) {
         return landlordService.createLandlord(landlord);
     }
 

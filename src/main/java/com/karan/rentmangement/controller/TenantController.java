@@ -9,7 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import com.karan.rentmangement.service.TenantService;
+
+import jakarta.validation.Valid;
+
 import com.karan.rentmangement.model.Tenant;
+import com.karan.rentmangement.model.rentPayment;
 
 @RestController
 @RequestMapping("/tenants")        // ✅ lowercase + plural
@@ -22,7 +26,7 @@ public class TenantController {
     }
 
     @PostMapping                   // ✅ no /addtenant
-    public Tenant createTenant(@RequestBody Tenant tenant){
+    public Tenant createTenant(@RequestBody @Valid Tenant tenant){
         return tenantService.createTenant(tenant);
     }
 
@@ -37,7 +41,7 @@ public class TenantController {
     }
 
     @PutMapping("/{id}")
-    public Tenant updateTenant(@PathVariable int id, @RequestBody Tenant tenant){
+    public Tenant updateTenant(@PathVariable int id, @RequestBody @Valid Tenant tenant){
         return tenantService.updateTenant(id, tenant);
     }
 
@@ -46,4 +50,10 @@ public class TenantController {
         tenantService.deleteTenant(id);
         return "Tenant deleted successfully"; // Return a success message
     }
+    @GetMapping("/{id}/payments")
+    public List<rentPayment> getPaymentsOfTenant(@PathVariable int id){
+        return tenantService.getPaymentsOfTenant(id);
+}
+
+    
 }

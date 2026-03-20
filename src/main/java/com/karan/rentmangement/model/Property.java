@@ -2,6 +2,10 @@ package com.karan.rentmangement.model;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+
 import com.karan.rentmangement.model.Landlord;
 
 @Entity
@@ -9,9 +13,15 @@ public class Property {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @NotBlank(message = "Address should not be blank")
     private String Address;
+   @NotBlank(message = "Rent should not be blank")
+   
+    @Min(value = 1, message = "Rent must be greater than 0")
     private long rent;
+   @NotBlank(message = "Type  should not be blank")
     private String type;
+    @NotBlank(message = "City  should not be blank")
     private String city ;
     @ManyToOne
     @JoinColumn(name = "landlord_id")

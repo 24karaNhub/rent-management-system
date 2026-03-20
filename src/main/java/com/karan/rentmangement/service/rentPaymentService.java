@@ -37,4 +37,17 @@ public class rentPaymentService {
 
     return rentpaymentRepo.save(payment);
 }
+public String deleteRentpayment(int id ){
+    rentPayment exisisting = rentpaymentRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Not found"));
+    rentpaymentRepo.delete(exisisting);
+    return "payment deleted succesfully ";
+}
+public rentPayment getbyid(int id){
+    return rentpaymentRepo.findById(id)
+            .orElseThrow(() -> new RuntimeException("Not found "));
+}
+public List<rentPayment> getAllPayments(){
+    return rentpaymentRepo.findAll();
+}
 }
