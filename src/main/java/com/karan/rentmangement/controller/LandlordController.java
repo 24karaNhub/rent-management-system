@@ -1,7 +1,10 @@
 package com.karan.rentmangement.controller;
+import com.karan.rentmangement.DTO.RequestDTO.LandlordRequestDTO;
+import com.karan.rentmangement.DTO.ResponeDTO.LandlordResponseDTO;
 import com.karan.rentmangement.model.Landlord;
 import com.karan.rentmangement.repository.LandlordRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,26 +24,28 @@ public class LandlordController {
     public LandlordController(LandlordService landlordService){
         this.landlordService=landlordService;
     }
-    @PostMapping("/addlandlord")
-    public Landlord createLandlord(@RequestBody  @Valid Landlord landlord) {
-        return landlordService.createLandlord(landlord);
+    @PostMapping
+    public ResponseEntity<LandlordResponseDTO>  createLandlord(@RequestBody  @Valid LandlordRequestDTO dto) {
+        return ResponseEntity
+                .status(201)
+                .body(landlordService.createLandlord(dto));
     }
 
     
 
     @GetMapping
-    public List<Landlord> getallLandlords() {
-        return landlordService.getallLandlords();
+    public ResponseEntity <List<LandlordResponseDTO>> getallLandlords() {
+        return ResponseEntity.ok(landlordService.getallLandlords());
     }
 
     @GetMapping("/{id}")
-    public Landlord getById(@PathVariable int id) {
-        return landlordService.getById(id);
+    public ResponseEntity<LandlordResponseDTO> getById(@PathVariable int id) {
+        return ResponseEntity.ok(landlordService.getById(id));
     }
 
     @PutMapping("/{id}")
-    public Landlord updateLandlord(@PathVariable int id, @RequestBody Landlord landlord) {
-        return landlordService.updateLandlord(id,landlord);
+    public  ResponseEntity<LandlordResponseDTO> updateLandlord(@PathVariable int id, @RequestBody LandlordRequestDTO dto) {
+        return ResponseEntity.ok(landlordService.updateLandlord(id,dto));
 
 
     }

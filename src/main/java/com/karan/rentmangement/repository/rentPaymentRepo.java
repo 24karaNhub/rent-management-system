@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.karan.rentmangement.DTO.ResponeDTO.TenantResponseDTO;
 import com.karan.rentmangement.model.Property;
 import com.karan.rentmangement.model.Tenant;
 import com.karan.rentmangement.model.rentPayment;

@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;  // Added import for DeleteMapping
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,6 +13,9 @@ import com.karan.rentmangement.service.TenantService;
 
 import jakarta.validation.Valid;
 
+import com.karan.rentmangement.DTO.RequestDTO.TenantRequestDTO;
+import com.karan.rentmangement.DTO.ResponeDTO.RentPaymentResponseDTO;
+import com.karan.rentmangement.DTO.ResponeDTO.TenantResponseDTO;
 import com.karan.rentmangement.model.Tenant;
 import com.karan.rentmangement.model.rentPayment;
 
@@ -26,33 +30,38 @@ public class TenantController {
     }
 
     @PostMapping                   // ✅ no /addtenant
-    public Tenant createTenant(@RequestBody @Valid Tenant tenant){
-        return tenantService.createTenant(tenant);
+    public ResponseEntity<TenantResponseDTO> createTenant(@RequestBody @Valid TenantRequestDTO dto){
+        return ResponseEntity
+                .status(201)
+                .body(tenantService.createTenant(dto));
+        
     }
 
     @GetMapping
-    public List<Tenant> getAllTenants(){
-        return tenantService.getAllTenants();  // ✅ camelCase
+    public  ResponseEntity<List<TenantResponseDTO>> getAllTenants(){
+        return ResponseEntity.ok(tenantService.getAllTenants()); // ✅ camelCase
     }
 
     @GetMapping("/{id}")
-    public Tenant getById(@PathVariable int id){  // ✅ Long not int
-        return tenantService.getById(id);
+    public ResponseEntity<TenantResponseDTO> getById(@PathVariable int id){  // ✅ Long not int
+        return ResponseEntity.ok(tenantService.getById(id));
     }
-
     @PutMapping("/{id}")
-    public Tenant updateTenant(@PathVariable int id, @RequestBody @Valid Tenant tenant){
-        return tenantService.updateTenant(id, tenant);
+    public ResponseEntity<TenantResponseDTO> updateTenant(@PathVariable int id, @RequestBody @Valid TenantRequestDTO dto){
+        return 
+        ResponseEntity.ok(tenantService.updateTenant(id,dto));
     }
 
-    @DeleteMapping("/{id}")        // ✅ added delete
-    public String deleteTenant(@PathVariable int id){
-        tenantService.deleteTenant(id);
-        return "Tenant deleted successfully"; // Return a success message
-    }
+    @DeleteMapping("/{id}")
+public ResponseEntity<String> deleteTenant(@PathVariable int id){
+    
+    String message = tenantService.deleteTenant(id);
+
+    return ResponseEntity.ok(message);
+}
     @GetMapping("/{id}/payments")
-    public List<rentPayment> getPaymentsOfTenant(@PathVariable int id){
-        return tenantService.getPaymentsOfTenant(id);
+    public ResponseEntity<List<RentPaymentResponseDTO>> getPaymentsOfTenant(@PathVariable int id){
+        return ResponseEntity.ok(tenantService.getPaymentsOfTenant(id));
 }
 
     
