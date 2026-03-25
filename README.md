@@ -105,7 +105,7 @@ src/main/java/com/karan/rentmanagement/
 
 - [x] Core CRUD APIs — landlord, tenant, property, payments
 - [x] Input validation and exception handling
-- [ ] DTO pattern — request/response separation
+- [x] DTO pattern — request/response separation
 - [ ] JWT authentication with role-based access
 - [ ] Scheduled rent reminders
 - [ ] Deployment — Railway / Render
