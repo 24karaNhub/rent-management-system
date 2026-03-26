@@ -37,7 +37,7 @@ public class TenantService {
     private Tenant toEntity(TenantRequestDTO dto){
         Tenant tenant = new Tenant();
         tenant.setName(dto.getName());
-       tenant.setName(dto.getName());
+    
         tenant.setEmail(dto.getEmail());
        tenant.setPhone(dto.getPhone());
        tenant.setRent(dto.getRent());

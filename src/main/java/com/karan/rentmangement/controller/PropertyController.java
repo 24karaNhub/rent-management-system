@@ -6,6 +6,11 @@ import jakarta.validation.Valid;
 import com.karan.rentmangement.model.Property;
 import com.karan.rentmangement.model.Tenant;
 import com.karan.rentmangement.model.rentPayment;
+import org.springframework.http.ResponseEntity;
+import com.karan.rentmangement.DTO.RequestDTO.PropertyRequestDTO;
+import com.karan.rentmangement.DTO.ResponeDTO.PropertyResponseDTO;
+import com.karan.rentmangement.DTO.ResponeDTO.TenantResponseDTO;
+import com.karan.rentmangement.DTO.ResponeDTO.RentPaymentResponseDTO;
 
 import java.util.List;
 
@@ -19,39 +24,74 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/property")
+@RequestMapping("/properties")
 public class PropertyController {
+
     private final PropertyService propertyService;
+
     public PropertyController(PropertyService propertyService){
-        this.propertyService=propertyService;
+        this.propertyService = propertyService;
     }
-    @PostMapping("/addProperty")
-    public Property createProperty(@RequestBody  @Valid Property property){
-        return propertyService.createProperty(property);
+
+    // ✅ CREATE
+    @PostMapping
+    public ResponseEntity<PropertyResponseDTO> createProperty(
+            @RequestBody @Valid PropertyRequestDTO dto){
+
+        return ResponseEntity
+                .status(201)
+                .body(propertyService.createProperty(dto));
     }
+
+    // ✅ GET ALL
     @GetMapping
-    public List<Property> getallProperties(){
-        return propertyService.getAllProperty();
+    public ResponseEntity<List<PropertyResponseDTO>> getAllProperties(){
+
+        return ResponseEntity
+                .ok(propertyService.getAll());
     }
+
+    // ✅ GET BY ID
     @GetMapping("/{id}")
-    public Property getbyid(@PathVariable int id ){
-        return propertyService.getById(id);
+    public ResponseEntity<PropertyResponseDTO> getById(@PathVariable int id){
+
+        return ResponseEntity
+                .ok(propertyService.getById(id));
     }
+
+    // ✅ UPDATE
     @PutMapping("/{id}")
-    public Property updateProperty(@PathVariable int id, @RequestBody @Valid Property property){
-        return propertyService.updateProperty(id, property);
+    public ResponseEntity<PropertyResponseDTO> updateProperty(
+            @PathVariable int id,
+            @RequestBody @Valid PropertyRequestDTO dto){
+
+        return ResponseEntity
+                .ok(propertyService.update(id, dto));
     }
-    @DeleteMapping("/{id}")        // ✅ added delete
-    public String deleteTenant(@PathVariable int id){
-        propertyService.deleteTenant(id);
-        return "Property deleted successfully"; // Return a success message
+
+    // ✅ DELETE
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteProperty(@PathVariable int id){
+
+        return ResponseEntity
+                .ok(propertyService.deleteProperty(id));
     }
+
+    // ✅ GET TENANTS OF PROPERTY
     @GetMapping("/{id}/tenants")
-    public List<Tenant> getTenantsOfProperty(@PathVariable int id){
-    return propertyService.getTenantsOfProperty(id);
+    public ResponseEntity<List<TenantResponseDTO>> getTenantsOfProperty(
+            @PathVariable int id){
+
+        return ResponseEntity
+                .ok(propertyService.getTenantsOfProperty(id));
     }
+
+    // ✅ GET PAYMENTS OF PROPERTY
     @GetMapping("/{id}/payments")
-    public List<rentPayment> getPaymentsOfProperty(@PathVariable int id){
-        return propertyService.getPaymentsOfProperty(id);
-}
+    public ResponseEntity<List<RentPaymentResponseDTO>> getPaymentsOfProperty(
+            @PathVariable int id){
+
+        return ResponseEntity
+                .ok(propertyService.getPaymentsOfProperty(id));
+    }
 }

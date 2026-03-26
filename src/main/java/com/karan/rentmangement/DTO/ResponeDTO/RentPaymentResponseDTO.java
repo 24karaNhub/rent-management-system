@@ -13,4 +13,6 @@ public class RentPaymentResponseDTO {
     private String month;
     private String status;
     private String date;
+    private String landlordName;
+    
 }

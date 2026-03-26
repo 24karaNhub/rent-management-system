@@ -2,14 +2,16 @@ package com.karan.rentmangement.controller;
 
 import com.karan.rentmangement.model.rentPayment;
 import com.karan.rentmangement.service.rentPaymentService;
-
+import com.karan.rentmangement.DTO.ResponeDTO.*;
+import com.karan.rentmangement.DTO.RequestDTO.*;
 import jakarta.validation.Valid;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rent-payment")
+@RequestMapping("/rent-payments")
 public class rentPaymentController {
 
     private final rentPaymentService rentpaymentService;
@@ -19,20 +21,27 @@ public class rentPaymentController {
     }
 
     @PostMapping
-    public rentPayment createPayment(@RequestBody @Valid rentPayment payment){
-        return rentpaymentService.createRentPayment(payment);
+    public ResponseEntity<RentPaymentResponseDTO> createPayment(
+            @RequestBody @Valid RentPaymentRequestDTO dto){
+
+        return ResponseEntity
+                .status(201)
+                .body(rentpaymentService.createRentPayment(dto));
     }
+
     @GetMapping
-    public List<rentPayment> getallPayment(){
-        return rentpaymentService.getAllPayments();
+    public ResponseEntity<List<RentPaymentResponseDTO>> getallPayment(){
+        return ResponseEntity.ok(rentpaymentService.getAllPayments());
     }
-    @DeleteMapping
-    public String deleteRentPayment(@PathVariable int id ){
-        rentpaymentService.deleteRentpayment(id);
-        return "payement deleted ";
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteRentPayment(@PathVariable int id){
+        String message = rentpaymentService.deleteRentpayment(id);
+        return ResponseEntity.ok(message);
     }
+
     @GetMapping("/{id}")
-    public rentPayment getbyId(@PathVariable int id ){
-        return rentpaymentService.getbyid(id);
+    public ResponseEntity<RentPaymentResponseDTO> getbyId(@PathVariable int id){
+        return ResponseEntity.ok(rentpaymentService.getbyid(id));
     }
 }
