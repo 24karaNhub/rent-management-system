@@ -1,5 +1,6 @@
 package com.karan.rentmangement.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -97,6 +98,7 @@ public RentPaymentResponseDTO toPaymentDTO(rentPayment payment){
     tenant.setEmail(dto.getEmail());
     tenant.setPhone(dto.getPhone());
     tenant.setRent(dto.getRent());
+        tenant.setMoveInDate(LocalDate.parse(dto.getMoveInDate()));
 
     // 2️⃣ Handle landlord relation
     Landlord landlord = landlordRepo.findById(dto.getLandlord_id())

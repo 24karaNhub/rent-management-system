@@ -21,6 +21,9 @@ public class TenantRequestDTO {
     private String phone;
     private int id;
     private long rent;
+    private String aadhar;
+    private String MoveInDate;
+    private String moveOutDate;
     private int landlord_id;
     private int property_id;
 }

@@ -1,11 +1,6 @@
 package com.karan.rentmangement.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -14,6 +9,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+
+import java.time.LocalDate;
 
 @Entity
 public class Tenant {
@@ -37,11 +34,19 @@ private String phone;
 @NotNull(message = "Rent cannot be null")
 @Positive(message = "Rent must be greater than 0")
 private Long rent;
-    public Tenant(String name, String email, String phone , Long rent){
+@NotNull(message = " date cannot be empty")
+@Column(name = "move_in_date")
+private LocalDate moveInDate;
+private LocalDate moveOutDate;
+private String aadhaar;
+    public Tenant(String name, String email, String phone , Long rent, LocalDate moveInDate, LocalDate moveOutDate, String aadhaar) {
         this.name=name;
         this.email=email;
         this.phone=phone;
         this.rent=rent;
+        this.moveInDate=moveInDate;
+        this.moveOutDate=moveOutDate;
+        this.aadhaar=aadhaar;
     }
     
     @ManyToOne
@@ -102,5 +107,26 @@ private Long rent;
     }
     public void setProperty(Property property){
         this.property=property;
+    }
+
+    public LocalDate getMoveInDate() {
+        return moveInDate;
+    }
+
+    public LocalDate getMoveOutDate() {
+        return moveOutDate;
+    }
+
+    public void setAadhaar(String aadhaar) {
+        this.aadhaar = aadhaar;
+    }
+    public String getAadhaar() {
+        return aadhaar;
+    }
+    public void getMoveInDate(LocalDate moveInDate) {
+        this.moveInDate = moveInDate;
+    }
+    public void getMoveOutDate(LocalDate moveOutDate) {
+        this.moveOutDate = moveOutDate;
     }
 }
