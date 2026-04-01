@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import com.karan.rentmangement.DTO.ResponeDTO.LandlordResponseDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -85,6 +86,14 @@ public RentPaymentResponseDTO toPaymentDTO(rentPayment payment){
 
     return dto;
 }
+public LandlordResponseDTO toLandlordDTO(Landlord landlord){
+        LandlordResponseDTO dto = new LandlordResponseDTO();
+        dto.setId(landlord.getId());
+        dto.setName(landlord.getName());
+        dto.setEmail(landlord.getEmail());
+        dto.setPhone(landlord.getPhone());
+        return dto;
+}
 
 
 
@@ -98,7 +107,8 @@ public RentPaymentResponseDTO toPaymentDTO(rentPayment payment){
     tenant.setEmail(dto.getEmail());
     tenant.setPhone(dto.getPhone());
     tenant.setRent(dto.getRent());
-        tenant.setMoveInDate(LocalDate.parse(dto.getMoveInDate()));
+    tenant.setMoveInDate(LocalDate.parse(dto.getMoveInDate()));
+    tenant.setMoveOutDate(LocalDate.parse(dto.getMoveOutDate()));
 
     // 2️⃣ Handle landlord relation
     Landlord landlord = landlordRepo.findById(dto.getLandlord_id())
@@ -170,6 +180,25 @@ public RentPaymentResponseDTO toPaymentDTO(rentPayment payment){
     tenantRepo.delete(existing);
     return "Tenant deleted successfully";
 }
+public LandlordResponseDTO getTenantLandlord(int id){
+        Tenant tenant = tenantRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tenant not found"));
+
+        Landlord landlord = tenant.getLandlord();  // ✅ fix here
+
+        if (landlord == null) {
+            throw new RuntimeException("No landlord assigned to this tenant");
+        }
+
+        return toLandlordDTO(landlord);
+    }
+    public List<TenantResponseDTO> getTenantsByLandlord(int landlordId) {
+        List<Tenant> tenants = tenantRepo.findByLandlordId(landlordId);
+
+        return tenants.stream()
+                .map(this::tResponseDTO)
+                .toList();
+    }
     public List<RentPaymentResponseDTO> getPaymentsOfTenant(int id){
 
     Tenant tenant = tenantRepo.findById(id)

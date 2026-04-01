@@ -1,4 +1,5 @@
 package com.karan.rentmangement.service;
+import com.karan.rentmangement.DTO.ResponeDTO.LandlordResponseDTO;
 import org.springframework.stereotype.Service;
 
 import com.karan.rentmangement.DTO.RequestDTO.PropertyRequestDTO;
@@ -97,6 +98,14 @@ private RentPaymentResponseDTO toPaymentDTO(rentPayment payment){
 
     return dto;
 }
+    private LandlordResponseDTO toLandlordDTO(Landlord landlord) {
+        LandlordResponseDTO dto = new LandlordResponseDTO();
+        dto.setId(landlord.getId());
+        dto.setName(landlord.getName());
+        dto.setEmail(landlord.getEmail());
+        dto.setPhone(landlord.getPhone());
+        return dto;
+    }
 
 
 
@@ -175,4 +184,15 @@ public List<RentPaymentResponseDTO> getPaymentsOfProperty(int id){
             .map(this::toPaymentDTO)
             .toList();
 }
+    public LandlordResponseDTO getLandlordOfProperty(int id) {
+        Property property = propertyRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Property not found"));
+
+        Landlord landlord = property.getLandlord();
+        if (landlord == null) {
+            throw new RuntimeException("No landlord assigned to this property");
+        }
+
+        return toLandlordDTO(landlord);
+    }
 }

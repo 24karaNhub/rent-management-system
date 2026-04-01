@@ -8,5 +8,6 @@ import java.util.List;
 @Repository
 public interface TenantRepo extends JpaRepository<Tenant, Integer> {
 List<Tenant> findByProperty(Property property);
+    List<Tenant> findByLandlordId(int landlordId);
     
 }

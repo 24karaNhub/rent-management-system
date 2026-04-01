@@ -1,4 +1,5 @@
 package com.karan.rentmangement.controller;
+import com.karan.rentmangement.DTO.ResponeDTO.LandlordResponseDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,6 +51,10 @@ public class TenantController {
     public ResponseEntity<TenantResponseDTO> updateTenant(@PathVariable int id, @RequestBody @Valid TenantRequestDTO dto){
         return 
         ResponseEntity.ok(tenantService.updateTenant(id,dto));
+    }
+    @GetMapping("/landlord/{id}")
+    public ResponseEntity<List<TenantResponseDTO>> getTenantsByLandlord(@PathVariable int id){
+        return ResponseEntity.ok(tenantService.getTenantsByLandlord(id));
     }
 
     @DeleteMapping("/{id}")

@@ -34,7 +34,7 @@ private String phone;
 @NotNull(message = "Rent cannot be null")
 @Positive(message = "Rent must be greater than 0")
 private Long rent;
-@NotNull(message = " date cannot be empty")
+
 @Column(name = "move_in_date")
 private LocalDate moveInDate;
 private LocalDate moveOutDate;
@@ -109,13 +109,14 @@ private String aadhaar;
         this.property=property;
     }
 
-    public LocalDate getMoveInDate() {
-        return moveInDate;
-    }
+   public LocalDate getMoveInDate() {
+    return moveInDate;
+}
 
-    public LocalDate getMoveOutDate() {
-        return moveOutDate;
-    }
+    public void setMoveInDate(LocalDate moveInDate) {
+        this.moveInDate = moveInDate;
+}
+    
 
     public void setAadhaar(String aadhaar) {
         this.aadhaar = aadhaar;
@@ -123,10 +124,11 @@ private String aadhaar;
     public String getAadhaar() {
         return aadhaar;
     }
-    public void getMoveInDate(LocalDate moveInDate) {
-        this.moveInDate = moveInDate;
+    public LocalDate getMoveOutDate(){
+        return moveOutDate;
     }
-    public void getMoveOutDate(LocalDate moveOutDate) {
+    
+    public void setMoveOutDate(LocalDate moveOutDate) {
         this.moveOutDate = moveOutDate;
     }
 }

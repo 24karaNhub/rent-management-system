@@ -1,4 +1,5 @@
 package com.karan.rentmangement.controller;
+import com.karan.rentmangement.DTO.ResponeDTO.LandlordResponseDTO;
 import com.karan.rentmangement.service.PropertyService;
 
 import jakarta.validation.Valid;
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/properties")
+@RequestMapping("/property")
 public class PropertyController {
 
     private final PropertyService propertyService;
@@ -85,7 +86,10 @@ public class PropertyController {
         return ResponseEntity
                 .ok(propertyService.getTenantsOfProperty(id));
     }
-
+    @GetMapping("/landlord/{id}")
+    public ResponseEntity<LandlordResponseDTO> getLandlordOfProperty(@PathVariable int id) {
+        return ResponseEntity.ok(propertyService.getLandlordOfProperty(id));
+    }
     // ✅ GET PAYMENTS OF PROPERTY
     @GetMapping("/{id}/payments")
     public ResponseEntity<List<RentPaymentResponseDTO>> getPaymentsOfProperty(
