@@ -184,15 +184,11 @@ public List<RentPaymentResponseDTO> getPaymentsOfProperty(int id){
             .map(this::toPaymentDTO)
             .toList();
 }
-    public LandlordResponseDTO getLandlordOfProperty(int id) {
-        Property property = propertyRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Property not found"));
+    public List<PropertyResponseDTO> getPropertiesByLandlord(int landlordId) {
+        List<Property> properties = propertyRepo.findByLandlordId(landlordId);
 
-        Landlord landlord = property.getLandlord();
-        if (landlord == null) {
-            throw new RuntimeException("No landlord assigned to this property");
-        }
-
-        return toLandlordDTO(landlord);
+        return properties.stream()
+                .map(this::toResponseDTO)
+                .toList();
     }
 }

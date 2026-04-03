@@ -98,6 +98,15 @@ public class rentPaymentService {
             
             
         }
+        if (rentPayment.getTenant() != null) {
+            dto.setTenantName(rentPayment.getTenant().getName());
+        }
+
+        // 🔥 THIS ALSO
+        if (rentPayment.getProperty() != null) {
+            dto.setPropertyName(rentPayment.getProperty().getAddress());
+        }
+
         return dto;
     }
 

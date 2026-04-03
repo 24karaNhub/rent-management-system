@@ -1,207 +1,172 @@
-import { useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
-import { getLandlords, addLandlord } from '../service/LandlordService'
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getAllLandlords, createLandlord } from "../services/api";
+import { Button } from "../components/ui/Button";
+import { Modal } from "../components/ui/Modal";
 
-function Landlords() {
-  const [landlords, setLandlords] = useState([])
-  const [loading, setLoading] = useState(true)
-  const navigate = useNavigate()
-  const [showForm, setShowForm] = useState(false)
-  const [errors, setErrors] = useState({})
-  const [form, setForm] = useState({ name: '', email: '', phone: '' })
-  const [hoveredCard, setHoveredCard] = useState(null)
+function AddLandlordModal({ isOpen, onClose, onSaved }) {
+  const [form, setForm] = useState({ name: "", email: "", phone: "" });
+  const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    getLandlords()
-      .then(res => { setLandlords(res.data); setLoading(false) })
-      .catch(err => { console.error("ERROR:", err); setLoading(false) })
-  }, [])
+    if (isOpen) { setForm({ name: "", email: "", phone: "" }); setErrors({}); }
+  }, [isOpen]);
 
-  const handleSubmit = () => {
-    setErrors({})
-    addLandlord(form)
-      .then(() => {
-        setShowForm(false)
-        setForm({ name: '', email: '', phone: '' })
-        getLandlords().then(res => setLandlords(res.data))
-      })
-      .catch(err => {
-        if (err.response) {
-          const data = err.response.data
-          if (typeof data === 'object' && !Array.isArray(data)) {
-            setErrors(data)
-          } else {
-            setErrors({ general: data.message || "Validation failed" })
-          }
-        } else {
-          setErrors({ general: "Cannot connect to server!" })
-        }
-      })
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" });
+  };
+
+  async function handleSave() {
+    setErrors({});
+    setSaving(true);
+    try {
+      await createLandlord(form);
+      onSaved();
+      onClose();
+    } catch (err) {
+      if (err.response && err.response.data) {
+        const data = err.response.data;
+        if (typeof data === "object" && !Array.isArray(data)) setErrors(data);
+        else setErrors({ general: data.message || "Validation failed" });
+      } else {
+        setErrors({ general: "Cannot connect to server!" });
+      }
+    } finally {
+      setSaving(false);
+    }
   }
 
-  if (loading) return (
-    <div style={styles.center}>
-      <div style={styles.spinner} />
-    </div>
-  )
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="Add New Landlord" maxWidth="max-w-md">
+      <div className="space-y-5">
+        {errors.general && (
+          <div className="p-4 bg-rose-50/80 backdrop-blur-sm text-rose-700 border border-rose-200 rounded-2xl text-sm shadow-sm font-medium">
+            {errors.general}
+          </div>
+        )}
+        <div>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Full Name</label>
+          <input
+            type="text" name="name" value={form.name} onChange={handleChange} placeholder="e.g. Karan Singh"
+            className={`w-full rounded-xl border ${errors.name ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20' : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20'} px-4 py-2.5 bg-slate-50/50 outline-none focus:ring-2 text-sm transition-all placeholder:text-slate-400`}
+          />
+          {errors.name && <p className="text-rose-500 text-xs mt-1.5 font-medium pl-1">{errors.name}</p>}
+        </div>
+        <div>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Email Address</label>
+          <input
+            type="email" name="email" value={form.email} onChange={handleChange} placeholder="e.g. karan@gmail.com"
+            className={`w-full rounded-xl border ${errors.email ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20' : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20'} px-4 py-2.5 bg-slate-50/50 outline-none focus:ring-2 text-sm transition-all placeholder:text-slate-400`}
+          />
+          {errors.email && <p className="text-rose-500 text-xs mt-1.5 font-medium pl-1">{errors.email}</p>}
+        </div>
+        <div>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Phone Number</label>
+          <input
+            type="text" name="phone" value={form.phone} onChange={handleChange} placeholder="10 Digits"
+            className={`w-full rounded-xl border ${errors.phone ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20' : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20'} px-4 py-2.5 bg-slate-50/50 outline-none focus:ring-2 text-sm transition-all placeholder:text-slate-400`}
+          />
+          {errors.phone && <p className="text-rose-500 text-xs mt-1.5 font-medium pl-1">{errors.phone}</p>}
+        </div>
+        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
+          <Button variant="secondary" onClick={onClose}>Cancel</Button>
+          <Button variant="primary" loading={saving} onClick={handleSave}>Save Landlord</Button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+export default function Landlords() {
+  const [landlords, setLandlords] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const [showForm, setShowForm] = useState(false);
+
+  async function loadData() {
+    setLoading(true);
+    try {
+      const data = await getAllLandlords();
+      setLandlords(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("ERROR:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { loadData(); }, []);
+
+  const total = landlords.length;
+  const active = landlords.filter(l => l.name).length;
 
   return (
-    <div style={styles.container}>
-
-      {/* Header */}
-      <div style={styles.header}>
+    <div className="space-y-8 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 bg-white/40 p-6 rounded-3xl border border-slate-200/60 backdrop-blur-sm shadow-sm">
         <div>
-          <h1 style={styles.title}>🏠 Landlords</h1>
-          <p style={styles.subtitle}>Manage your property owners</p>
+          <h1 className="text-3xl font-display font-bold text-slate-900 tracking-tight">Landlords</h1>
+          <p className="text-sm font-medium text-slate-500 mt-1">Manage platform property owners and their details.</p>
         </div>
-        <button
-          style={styles.addBtn}
-          onClick={() => { setShowForm(!showForm); setErrors({}) }}
-          onMouseEnter={e => e.currentTarget.style.backgroundColor = '#c73652'}
-          onMouseLeave={e => e.currentTarget.style.backgroundColor = '#e94560'}
-        >
-          {showForm ? "✕ Cancel" : "+ Add Landlord"}
-        </button>
+        <Button variant="primary" onClick={() => setShowForm(true)}>
+          <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+          Add Landlord
+        </Button>
       </div>
 
-      {/* Add Form */}
-      {showForm && (
-        <div style={styles.form}>
-          <h3 style={styles.formTitle}>Add New Landlord</h3>
-
-          {errors.general && (
-            <div style={styles.generalError}>🚨 {errors.general}</div>
-          )}
-
-          <div style={styles.formGrid}>
-            <div>
-              <label style={styles.label}>Full Name</label>
-              <input
-                style={{ ...styles.input, borderColor: errors.name ? '#ff4d4f' : '#2a2a3f' }}
-                placeholder="e.g. Karan Singh"
-                value={form.name}
-                onChange={e => { setForm({ ...form, name: e.target.value }); setErrors({ ...errors, name: '' }) }}
-              />
-              {errors.name && <p style={styles.errorText}>⚠️ {errors.name}</p>}
-            </div>
-
-            <div>
-              <label style={styles.label}>Email Address</label>
-              <input
-                style={{ ...styles.input, borderColor: errors.email ? '#ff4d4f' : '#2a2a3f' }}
-                placeholder="e.g. karan@gmail.com"
-                value={form.email}
-                onChange={e => { setForm({ ...form, email: e.target.value }); setErrors({ ...errors, email: '' }) }}
-              />
-              {errors.email && <p style={styles.errorText}>⚠️ {errors.email}</p>}
-            </div>
-
-            <div>
-              <label style={styles.label}>Phone Number</label>
-              <input
-                style={{ ...styles.input, borderColor: errors.phone ? '#ff4d4f' : '#2a2a3f' }}
-                placeholder="10 digits, e.g. 9876543210"
-                value={form.phone}
-                onChange={e => { setForm({ ...form, phone: e.target.value }); setErrors({ ...errors, phone: '' }) }}
-              />
-              {errors.phone && <p style={styles.errorText}>⚠️ {errors.phone}</p>}
-            </div>
+      <div className="flex gap-4">
+        <div className="bg-white/60 backdrop-blur-md border border-slate-200/60 rounded-2xl px-6 py-4 flex items-center gap-4 shadow-sm min-w-44">
+          <div>
+            <p className="text-3xl font-display font-bold text-indigo-600">{total}</p>
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-0.5">Total</p>
           </div>
+        </div>
+        <div className="bg-white/60 backdrop-blur-md border border-slate-200/60 rounded-2xl px-6 py-4 flex items-center gap-4 shadow-sm min-w-44">
+          <div>
+            <p className="text-3xl font-display font-bold text-slate-800">{active}</p>
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-0.5">Active</p>
+          </div>
+        </div>
+      </div>
 
-          <button
-            style={styles.submitBtn}
-            onClick={handleSubmit}
-            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#3d8b40'}
-            onMouseLeave={e => e.currentTarget.style.backgroundColor = '#4CAF50'}
-          >
-            ✓ Save Landlord
-          </button>
+      {loading ? (
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {[1,2,3].map(i => <div key={i} className="h-48 bg-slate-200/50 rounded-3xl animate-pulse"></div>)}
+        </div>
+      ) : (
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {landlords.map((l) => (
+            <div
+              key={l.id}
+              onClick={() => navigate(`/landlords/${l.id}`)}
+              className="bg-white/80 backdrop-blur-md p-6 rounded-3xl border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
+            >
+              <div className="flex justify-between items-start mb-5">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-white flex items-center justify-center text-xl font-bold shadow-md shadow-indigo-500/30 group-hover:scale-110 transition-transform duration-300">
+                  <span className="drop-shadow-sm">{l.name?.charAt(0).toUpperCase() || 'U'}</span>
+                </div>
+                <div className="bg-indigo-50 text-indigo-600 text-xs font-bold px-3 py-1.5 rounded-full border border-indigo-100">
+                  ID: {l.id}
+                </div>
+              </div>
+              <h3 className="text-xl font-display font-bold text-slate-900 tracking-tight mb-3 group-hover:text-indigo-700 transition-colors">{l.name}</h3>
+              <div className="space-y-2 bg-slate-50/50 p-3 rounded-xl border border-slate-100/50">
+                <p className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                  <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                  {l.email || "No Email Provided"}
+                </p>
+                <p className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                  <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                  {l.phone || "No Phone Provided"}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* Stats */}
-      <div style={styles.statsRow}>
-        <div style={styles.statCard}>
-          <span style={styles.statNumber}>{landlords.length}</span>
-          <span style={styles.statLabel}>Total Landlords</span>
-        </div>
-        <div style={styles.statCard}>
-          <span style={styles.statNumber}>{landlords.filter(l => l.name).length}</span>
-          <span style={styles.statLabel}>Active</span>
-        </div>
-      </div>
-
-      {/* Landlord Cards */}
-      <div style={styles.grid}>
-        {landlords.map((l) => (
-          <div
-            key={l.id}
-            style={{
-              ...styles.card,
-              transform: hoveredCard === l.id ? 'translateY(-4px)' : 'translateY(0)',
-              boxShadow: hoveredCard === l.id ? '0 8px 30px rgba(233,69,96,0.2)' : '0 2px 8px rgba(0,0,0,0.3)',
-              borderColor: hoveredCard === l.id ? '#e94560' : '#2a2a3f',
-              cursor: 'pointer'
-            }}
-            onClick={() => navigate(`/landlords/${l.id}`)}
-            onMouseEnter={() => setHoveredCard(l.id)}
-            onMouseLeave={() => setHoveredCard(null)}
-          >
-            <div style={styles.cardTop}>
-              <div style={styles.avatar}>{l.name?.charAt(0).toUpperCase()}</div>
-              <div style={styles.idBadge}>ID: {l.id}</div>
-            </div>
-            <h3 style={styles.name}>{l.name}</h3>
-            <div style={styles.infoRow}>
-              <span style={styles.infoIcon}>📧</span>
-              <span style={styles.info}>{l.email}</span>
-            </div>
-            <div style={styles.infoRow}>
-              <span style={styles.infoIcon}>📱</span>
-              <span style={styles.info}>{l.phone}</span>
-            </div>
-            <div style={styles.viewBtn}>View Details →</div>
-          </div>
-        ))}
-      </div>
+      <AddLandlordModal isOpen={showForm} onClose={() => setShowForm(false)} onSaved={loadData} />
     </div>
-  )
+  );
 }
-
-const styles = {
-  container: { padding: '30px', marginTop: '70px', minHeight: '100vh', backgroundColor: '#0f0f1a', color: 'white' },
-  center: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#0f0f1a' },
-  spinner: { width: '40px', height: '40px', border: '3px solid #2a2a3f', borderTop: '3px solid #e94560', borderRadius: '50%', animation: 'spin 0.8s linear infinite' },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px' },
-  title: { fontSize: '32px', margin: '0 0 4px', color: '#e94560', fontWeight: '700' },
-  subtitle: { margin: 0, color: '#666', fontSize: '14px' },
-  addBtn: { backgroundColor: '#e94560', color: 'white', border: 'none', padding: '12px 22px', borderRadius: '10px', cursor: 'pointer', fontSize: '15px', fontWeight: '600', transition: 'background-color 0.2s' },
-
-  form: { backgroundColor: '#1e1e2f', padding: '28px', borderRadius: '14px', marginBottom: '28px', border: '1px solid #2a2a3f' },
-  formTitle: { color: 'white', margin: '0 0 20px', fontSize: '18px', fontWeight: '600' },
-  formGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '20px' },
-  label: { display: 'block', color: '#aaa', fontSize: '13px', marginBottom: '6px', fontWeight: '500' },
-  input: { padding: '12px 14px', borderRadius: '8px', border: '1px solid #2a2a3f', backgroundColor: '#2a2a3f', color: 'white', fontSize: '14px', outline: 'none', width: '100%', boxSizing: 'border-box' },
-  submitBtn: { backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '13px 28px', borderRadius: '8px', cursor: 'pointer', fontSize: '15px', fontWeight: '700', transition: 'background-color 0.2s' },
-
-  generalError: { backgroundColor: '#2d0a0a', border: '1px solid #ff4d4f', color: '#ff4d4f', padding: '12px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: '500', marginBottom: '16px' },
-  errorText: { color: '#ff4d4f', fontSize: '12px', margin: '5px 0 0' },
-
-  statsRow: { display: 'flex', gap: '16px', marginBottom: '28px' },
-  statCard: { backgroundColor: '#1e1e2f', border: '1px solid #2a2a3f', padding: '16px 28px', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' },
-  statNumber: { fontSize: '28px', fontWeight: '700', color: '#e94560' },
-  statLabel: { fontSize: '12px', color: '#666', textTransform: 'uppercase', letterSpacing: '0.5px' },
-
-  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: '20px' },
-  card: { backgroundColor: '#1e1e2f', padding: '24px', borderRadius: '14px', border: '1px solid #2a2a3f', transition: 'all 0.2s ease' },
-  cardTop: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' },
-  avatar: { width: '54px', height: '54px', borderRadius: '50%', backgroundColor: '#e94560', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', fontWeight: '700' },
-  idBadge: { backgroundColor: '#2a2a3f', padding: '4px 10px', borderRadius: '20px', fontSize: '11px', color: '#e94560', fontWeight: '600' },
-  name: { fontSize: '18px', margin: '0 0 12px', color: 'white', fontWeight: '600' },
-  infoRow: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' },
-  infoIcon: { fontSize: '13px' },
-  info: { color: '#aaa', fontSize: '13px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
-  viewBtn: { marginTop: '16px', color: '#e94560', fontSize: '13px', fontWeight: '600', textAlign: 'right' }
-}
-
-export default Landlords

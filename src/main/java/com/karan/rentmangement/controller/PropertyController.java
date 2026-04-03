@@ -87,8 +87,8 @@ public class PropertyController {
                 .ok(propertyService.getTenantsOfProperty(id));
     }
     @GetMapping("/landlord/{id}")
-    public ResponseEntity<LandlordResponseDTO> getLandlordOfProperty(@PathVariable int id) {
-        return ResponseEntity.ok(propertyService.getLandlordOfProperty(id));
+    public ResponseEntity<List<PropertyResponseDTO>> getPropertiesByLandlord(@PathVariable int id) {
+        return ResponseEntity.ok((List<PropertyResponseDTO>) propertyService.getPropertiesByLandlord(id));
     }
     // ✅ GET PAYMENTS OF PROPERTY
     @GetMapping("/{id}/payments")

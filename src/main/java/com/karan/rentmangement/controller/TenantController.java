@@ -69,5 +69,6 @@ public ResponseEntity<String> deleteTenant(@PathVariable int id){
         return ResponseEntity.ok(tenantService.getPaymentsOfTenant(id));
 }
 
+
     
 }

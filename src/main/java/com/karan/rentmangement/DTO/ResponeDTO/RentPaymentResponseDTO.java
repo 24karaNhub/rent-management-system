@@ -1,5 +1,6 @@
 package com.karan.rentmangement.DTO.ResponeDTO;
 
+import com.karan.rentmangement.model.rentPayment;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,5 +15,8 @@ public class RentPaymentResponseDTO {
     private String status;
     private String date;
     private String landlordName;
+    private String tenantName;
+    private String propertyName;
+
     
 }

@@ -31,12 +31,14 @@ public class Landlord {
     private String email;
     @Size(min = 10 , max = 10, message = "Phone number must contain 10 digits ")
     private String phone;
+    private String password;
     
-    public Landlord( String name, String email, String phone) {
+    public Landlord( String name, String email, String phone, String password) {
        
         this.name = name;
         this.email = email;
         this.phone=phone;
+        this.password=password;
     }
 
     @OneToMany(mappedBy = "landlord")
@@ -78,5 +80,11 @@ public class Landlord {
 
     public String getPhone() {
         return phone;
+    }
+    public void setPassword(String password){
+        this.password=password;
+    }
+    public String getPassword() {
+        return password;
     }
 }
