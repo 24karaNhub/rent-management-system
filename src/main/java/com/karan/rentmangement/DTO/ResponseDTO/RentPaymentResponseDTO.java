@@ -1,6 +1,5 @@
-package com.karan.rentmangement.DTO.ResponeDTO;
+package com.karan.rentmangement.DTO.ResponseDTO;
 
-import com.karan.rentmangement.model.rentPayment;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

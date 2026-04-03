@@ -1,9 +1,6 @@
 package com.karan.rentmangement.controller;
 import com.karan.rentmangement.DTO.RequestDTO.LandlordRequestDTO;
-import com.karan.rentmangement.DTO.ResponeDTO.LandlordResponseDTO;
-import com.karan.rentmangement.model.Landlord;
-import com.karan.rentmangement.repository.LandlordRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.karan.rentmangement.DTO.ResponseDTO.LandlordResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,8 +11,6 @@ import java.util.List;
 import com.karan.rentmangement.service.*;
 
 import jakarta.validation.Valid;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @RestController
 @RequestMapping("/landlord")
@@ -35,7 +30,7 @@ public class LandlordController {
 
     @GetMapping
     public ResponseEntity <List<LandlordResponseDTO>> getallLandlords() {
-        return ResponseEntity.ok(landlordService.getallLandlords());
+        return ResponseEntity.ok(landlordService.getAllLandlords());
     }
 
     @GetMapping("/{id}")
@@ -49,5 +44,9 @@ public class LandlordController {
 
 
     }
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteLandlord(@PathVariable int id) {
+        landlordService.deleteLandlord(id);
+        return ResponseEntity.ok("Landlord deleted successfully");
+    }
 }

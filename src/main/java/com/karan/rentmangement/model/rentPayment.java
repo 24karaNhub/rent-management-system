@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.JoinColumn;
+import jakarta.validation.constraints.Positive;
 
 import java.time.Month;
 import java.time.LocalDate;
@@ -20,8 +21,9 @@ public class rentPayment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Min(value = 1, message = "Rent must be greater than 0")
-    @NotNull(message = "Rent should not be blank")
-    private long amount;
+    @NotNull(message = "Rent cannot be null")
+    @Positive(message = "Rent must be greater than 0")
+    private Long rent;
     @NotNull(message = "Month should not be blank")
     private Month month;
     @NotBlank(message = "Status should not be blank")
@@ -40,8 +42,8 @@ public class rentPayment {
     @JoinColumn(name = "tenant_id")
     private Tenant tenant;
 
-    public rentPayment(long amount, Month month, String status, LocalDate date) {
-        this.amount = amount;
+    public rentPayment(long rent, Month month, String status, LocalDate date) {
+        this.rent = rent;
         this.month = month;
         this.status = status;
         this.date = date;
@@ -58,12 +60,12 @@ public class rentPayment {
     }
 
 
-    public long getAmount() {
-        return amount;
+    public Long getRent() {
+        return rent;
     }
 
-    public void setAmount(long amount) {
-        this.amount = amount;
+    public void setRent(Long rent) {
+        this.rent = rent;
     }
 
 

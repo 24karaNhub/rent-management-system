@@ -1,4 +1,4 @@
-package com.karan.rentmangement.DTO.ResponeDTO;
+package com.karan.rentmangement.DTO.ResponseDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

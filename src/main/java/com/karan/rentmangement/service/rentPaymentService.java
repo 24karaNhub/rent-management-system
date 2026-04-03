@@ -5,15 +5,10 @@ import java.time.Month;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import com.karan.rentmangement.repository.rentPaymentRepo;
 
-import jakarta.validation.constraints.Null;
 import com.karan.rentmangement.repository.*;
-import com.karan.rentmangement.repository.LandlordRepo;
-import com.karan.rentmangement.repository.PropertyRepo;
 import com.karan.rentmangement.DTO.RequestDTO.RentPaymentRequestDTO;
-import com.karan.rentmangement.DTO.ResponeDTO.RentPaymentResponseDTO;
-import com.karan.rentmangement.DTO.ResponeDTO.TenantResponseDTO;
+import com.karan.rentmangement.DTO.ResponseDTO.RentPaymentResponseDTO;
 import com.karan.rentmangement.model.Landlord;
 import com.karan.rentmangement.model.Property;
 import com.karan.rentmangement.model.Tenant;
@@ -37,9 +32,11 @@ public class rentPaymentService {
     private rentPayment toEntity(RentPaymentRequestDTO dto){
         rentPayment payment = new rentPayment();
 
-        payment.setAmount(dto.getAmount());
+        payment.setRent(dto.getRent());
         payment.setDate(LocalDate.parse(dto.getDate()));
-        payment.setMonth(Month.valueOf(dto.getMonth()));
+        payment.setMonth(
+    Month.valueOf(dto.getMonth().toUpperCase())
+);
         payment.setStatus(dto.getStatus());
 
         // landlord fetch
@@ -89,9 +86,13 @@ public class rentPaymentService {
     // }
     private RentPaymentResponseDTO tResponseDTO(rentPayment rentPayment){
         RentPaymentResponseDTO dto = new RentPaymentResponseDTO();
-        dto.setAmount(rentPayment.getAmount());
-        dto.setDate(rentPayment.getDate().toString());
-        dto.setMonth(rentPayment.getMonth().toString());
+        dto.setAmount(rentPayment.getRent());
+        if (rentPayment.getDate() != null) {
+            dto.setDate(rentPayment.getDate().toString());
+        }
+        if (rentPayment.getMonth() != null) {
+            dto.setMonth(rentPayment.getMonth().toString());
+        }
         dto.setStatus(rentPayment.getStatus());
         if (rentPayment.getLandlord() != null) {
             dto.setLandlordName(rentPayment.getLandlord().getName());

@@ -2,17 +2,14 @@ package com.karan.rentmangement.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import com.karan.rentmangement.DTO.ResponeDTO.LandlordResponseDTO;
+import com.karan.rentmangement.DTO.ResponseDTO.LandlordResponseDTO;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.karan.rentmangement.DTO.RequestDTO.TenantRequestDTO;
-import com.karan.rentmangement.DTO.ResponeDTO.RentPaymentResponseDTO;
-import com.karan.rentmangement.DTO.ResponeDTO.TenantResponseDTO;
+import com.karan.rentmangement.DTO.ResponseDTO.RentPaymentResponseDTO;
+import com.karan.rentmangement.DTO.ResponseDTO.TenantResponseDTO;
 import com.karan.rentmangement.model.Landlord;
 import com.karan.rentmangement.model.Property;
 import com.karan.rentmangement.model.Tenant;
@@ -21,8 +18,6 @@ import com.karan.rentmangement.repository.LandlordRepo;
 import com.karan.rentmangement.repository.PropertyRepo;
 import com.karan.rentmangement.repository.TenantRepo;
 import com.karan.rentmangement.repository.rentPaymentRepo;
-
-import jakarta.validation.Valid;
 
 @Service
 public class TenantService {
@@ -79,10 +74,18 @@ public RentPaymentResponseDTO toPaymentDTO(rentPayment payment){
     RentPaymentResponseDTO dto = new RentPaymentResponseDTO();
 
     dto.setId(payment.getId());
-    dto.setAmount(payment.getAmount());
-    dto.setMonth(payment.getMonth().toString());
+    
+    if (payment.getRent() != null) {
+        dto.setAmount(payment.getRent());
+    }
+    if (payment.getMonth() != null) {
+        dto.setMonth(payment.getMonth().toString());
+    }
+    if (payment.getDate() != null) {
+        dto.setDate(payment.getDate().toString());
+    }
+    
     dto.setStatus(payment.getStatus());
-    dto.setDate(payment.getDate().toString());
 
     return dto;
 }

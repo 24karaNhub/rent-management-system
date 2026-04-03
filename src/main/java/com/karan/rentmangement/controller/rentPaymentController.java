@@ -1,9 +1,9 @@
 package com.karan.rentmangement.controller;
 
-import com.karan.rentmangement.model.rentPayment;
 import com.karan.rentmangement.service.rentPaymentService;
-import com.karan.rentmangement.DTO.ResponeDTO.*;
+import com.karan.rentmangement.DTO.ResponseDTO.*;
 import com.karan.rentmangement.DTO.RequestDTO.*;
+import com.karan.rentmangement.DTO.RequestDTO.RentPaymentRequestDTO;
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;

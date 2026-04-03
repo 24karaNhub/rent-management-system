@@ -1,5 +1,4 @@
 package com.karan.rentmangement.controller;
-import com.karan.rentmangement.DTO.ResponeDTO.LandlordResponseDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,10 +14,8 @@ import com.karan.rentmangement.service.TenantService;
 import jakarta.validation.Valid;
 
 import com.karan.rentmangement.DTO.RequestDTO.TenantRequestDTO;
-import com.karan.rentmangement.DTO.ResponeDTO.RentPaymentResponseDTO;
-import com.karan.rentmangement.DTO.ResponeDTO.TenantResponseDTO;
-import com.karan.rentmangement.model.Tenant;
-import com.karan.rentmangement.model.rentPayment;
+import com.karan.rentmangement.DTO.ResponseDTO.RentPaymentResponseDTO;
+import com.karan.rentmangement.DTO.ResponseDTO.TenantResponseDTO;
 
 @RestController
 @RequestMapping("/tenants")        // ✅ lowercase + plural

@@ -41,8 +41,11 @@ export const getAllLandlords = () => API.get("/landlord").then(r => r.data);
 export const getLandlordById = (id) => API.get(`/landlord/${id}`).then(r => r.data);
 export const createLandlord = (data) => API.post("/landlord", data).then(r => r.data);
 export const updateLandlord = (id, data) => API.put(`/landlord/${id}`, data).then(r => r.data);
-export const deletePayment = (id) =>
-  API.delete(`/rent-payments/${id}`).then(r => r.data);
+export const deleteLandlord = (id) => API.delete(`/landlord/${id}`).then(r => r.data);
+
+// AUTH
+export const loginClient = (data) => API.post("/auth/login", data).then(r => r.data);
+export const signupClient = (data) => API.post("/auth/signup", data).then(r => r.data);
 
 
 export default API;

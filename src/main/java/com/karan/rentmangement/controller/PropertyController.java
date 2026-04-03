@@ -1,17 +1,13 @@
 package com.karan.rentmangement.controller;
-import com.karan.rentmangement.DTO.ResponeDTO.LandlordResponseDTO;
 import com.karan.rentmangement.service.PropertyService;
 
 import jakarta.validation.Valid;
 
-import com.karan.rentmangement.model.Property;
-import com.karan.rentmangement.model.Tenant;
-import com.karan.rentmangement.model.rentPayment;
 import org.springframework.http.ResponseEntity;
 import com.karan.rentmangement.DTO.RequestDTO.PropertyRequestDTO;
-import com.karan.rentmangement.DTO.ResponeDTO.PropertyResponseDTO;
-import com.karan.rentmangement.DTO.ResponeDTO.TenantResponseDTO;
-import com.karan.rentmangement.DTO.ResponeDTO.RentPaymentResponseDTO;
+import com.karan.rentmangement.DTO.ResponseDTO.PropertyResponseDTO;
+import com.karan.rentmangement.DTO.ResponseDTO.TenantResponseDTO;
+import com.karan.rentmangement.DTO.ResponseDTO.RentPaymentResponseDTO;
 
 import java.util.List;
 

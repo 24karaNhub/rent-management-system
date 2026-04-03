@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getLandlordById, getPropertiesByLandlord, getTenantsByLandlord } from '../services/api';
+import { deleteLandlord, getLandlordById, getPropertiesByLandlord, getTenantsByLandlord } from '../services/api';
 
 export default function LandlordDetails() {
   const { id } = useParams();
@@ -10,6 +10,7 @@ export default function LandlordDetails() {
   const [properties, setProperties] = useState([]);
   const [tenants, setTenants] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -26,6 +27,20 @@ export default function LandlordDetails() {
       setLoading(false);
     });
   }, [id]);
+
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete this landlord? This action cannot be undone.")) {
+      setDeleting(true);
+      try {
+        await deleteLandlord(id);
+        navigate('/landlords');
+      } catch (err) {
+        console.error("Failed to delete landlord:", err);
+        alert(err.response?.data?.message || "Failed to delete landlord.");
+        setDeleting(false);
+      }
+    }
+  };
 
   if (loading) {
     return (
@@ -50,13 +65,28 @@ export default function LandlordDetails() {
 
   return (
     <div className="space-y-8 animate-fade-in pb-10">
-      <button
-        onClick={() => navigate('/landlords')}
-        className="text-slate-500 hover:text-indigo-600 font-semibold text-sm transition-colors flex items-center gap-1.5 w-max bg-slate-50 px-4 py-2 rounded-lg border border-slate-200/60 shadow-sm"
-      >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-        Back to Directory
-      </button>
+      <div className="flex justify-between items-center">
+        <button
+          onClick={() => navigate('/landlords')}
+          className="text-slate-500 hover:text-indigo-600 font-semibold text-sm transition-colors flex items-center gap-1.5 w-max bg-slate-50 px-4 py-2 rounded-lg border border-slate-200/60 shadow-sm"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+          Back to Directory
+        </button>
+
+        <button
+          onClick={handleDelete}
+          disabled={deleting}
+          className="text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-4 py-2 rounded-lg border border-rose-200 shadow-sm font-semibold text-sm transition-colors flex items-center gap-1.5"
+        >
+          {deleting ? (
+            <span className="w-4 h-4 rounded-full border-2 border-rose-400 border-t-transparent animate-spin inline-block"></span>
+          ) : (
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+          )}
+          {deleting ? 'Deleting...' : 'Delete Landlord'}
+        </button>
+      </div>
 
       {/* Hero Profile Card */}
       <div className="bg-white/80 backdrop-blur-md border border-slate-200/80 rounded-3xl p-8 flex flex-col md:flex-row md:justify-between md:items-center gap-8 shadow-xl shadow-slate-200/20 relative overflow-hidden">

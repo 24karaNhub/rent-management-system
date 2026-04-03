@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const navItems = [
   { name: "Dashboard", path: "/", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
@@ -10,6 +10,17 @@ const navItems = [
 
 export function Sidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  
+  const userStr = localStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : null;
+  const username = user?.name || "Admin User";
+  const userInitials = username.charAt(0).toUpperCase();
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
 
   return (
     <div className="w-72 bg-white/60 backdrop-blur-xl border-r border-slate-200/60 flex flex-col h-full transition-all duration-300">
@@ -56,17 +67,28 @@ export function Sidebar() {
           );
         })}
       </nav>
-      <div className="p-4 border-t border-slate-200/50 m-4 bg-white/50 rounded-2xl ring-1 ring-slate-900/5 backdrop-blur-sm">
-        <div className="flex items-center cursor-pointer group">
-          <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-emerald-400 to-teal-500 p-[2px]">
-            <div className="bg-white rounded-full h-full w-full flex items-center justify-center">
-              <span className="text-teal-600 font-bold text-sm">AD</span>
+      <div className="p-4 border-t border-slate-200/50 m-4 bg-white/50 rounded-2xl ring-1 ring-slate-900/5 backdrop-blur-sm group">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-emerald-400 to-teal-500 p-[2px]">
+              <div className="bg-white rounded-full h-full w-full flex items-center justify-center">
+                <span className="text-teal-600 font-bold text-sm drop-shadow-sm">{userInitials}</span>
+              </div>
+            </div>
+            <div className="ml-3 max-w-[120px]">
+              <p className="text-sm font-bold text-slate-900 truncate">{username}</p>
+              <p className="text-xs text-slate-500">Premium Account</p>
             </div>
           </div>
-          <div className="ml-3">
-            <p className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">Admin User</p>
-            <p className="text-xs text-slate-500">Premium Account</p>
-          </div>
+          <button 
+            onClick={handleLogout}
+            className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all duration-200"
+            title="Log out"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
