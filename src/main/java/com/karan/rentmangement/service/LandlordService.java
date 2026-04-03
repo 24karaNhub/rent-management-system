@@ -3,6 +3,7 @@ package com.karan.rentmangement.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.transaction.annotation.Transactional;
 import com.karan.rentmangement.model.Property;
 import com.karan.rentmangement.model.Tenant;
 import org.springframework.stereotype.Service;
@@ -89,31 +90,18 @@ public class LandlordService {
     }
 
     // ❌ Delete
-    public LandlordResponseDTO deleteLandlord(int id) {
+    
+    @Transactional
+public LandlordResponseDTO deleteLandlord(int id) {
+    Landlord existing = landlordRepo.findById(id)
+            .orElseThrow(() -> new RuntimeException("Landlord not found"));
 
-        Landlord existing = landlordRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Landlord not found"));
+    // ✅ Direct queries — bypass Bean Validation entirely
+    tenantRepo.unlinkLandlord(id);
+    propertyRepo.unlinkLandlord(id);
+    rentPaymentRepository.unlinkLandlord(id);
 
-        // 🔥 Break tenant relation
-        for (Tenant t : existing.getTenants()) {
-            t.setLandlord(null);
-            tenantRepo.save(t);
-        }
-
-        // 🔥 Break property relation
-        for (Property p : existing.getProperties()) {
-            p.setLandlord(null);
-            propertyRepo.save(p);
-        }
-
-        // 🔥 Break rent payment relation
-        for (rentPayment rp : rentPaymentRepository.findByLandlord(existing)) {
-            rp.setLandlord(null);
-            rentPaymentRepository.save(rp);
-        }
-
-        landlordRepo.delete(existing);
-
-        return toResponseDTO(existing);
-    }
+    landlordRepo.delete(existing);
+    return toResponseDTO(existing);
+}
 }

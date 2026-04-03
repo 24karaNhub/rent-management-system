@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { 
   getAllLandlords, 
-  getAllProperties, 
-  getAllTenants, 
-  getAllPayments, 
+  getPropertiesByLandlord, 
+  getTenantsByLandlord, 
+  getPaymentsByLandlord, 
   createPayment 
 } from "../services/api";
 import { Card } from "../components/ui/Card";
@@ -121,11 +121,18 @@ export default function Dashboard() {
     setLoading(true);
     setError(null);
     try {
+      const landlordId = localStorage.getItem("landlordId");
+      if (!landlordId) {
+        setError("Not logged in. Please log in.");
+        setLoading(false);
+        return;
+      }
+      
       const [l, p, t, pay] = await Promise.all([
-        getAllLandlords(),
-        getAllProperties(),
-        getAllTenants(),
-        getAllPayments()
+        getAllLandlords(), // keep for now
+        getPropertiesByLandlord(landlordId).catch(() => []),
+        getTenantsByLandlord(landlordId).catch(() => []),
+        getPaymentsByLandlord(landlordId).catch(() => [])
       ]);
       
       const landlords = Array.isArray(l) ? l.length : 0;

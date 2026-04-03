@@ -1,5 +1,6 @@
 package com.karan.rentmangement.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,9 +21,10 @@ public class rentPayment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Min(value = 1, message = "Rent must be greater than 0")
+    
     @NotNull(message = "Rent cannot be null")
     @Positive(message = "Rent must be greater than 0")
+    @Column(name = "rent", nullable = false)
     private Long rent;
     @NotNull(message = "Month should not be blank")
     private Month month;

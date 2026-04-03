@@ -19,6 +19,7 @@ export default function Login() {
       const landlord = await loginClient(form);
       // For now, simple redirect. You can store user data in LocalStorage/Context here.
       localStorage.setItem('user', JSON.stringify(landlord));
+      localStorage.setItem("landlordId", landlord.id);
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Check your credentials.');

@@ -1,6 +1,8 @@
 package com.karan.rentmangement.service;
 
 import com.karan.rentmangement.DTO.RequestDTO.SignupRequestDTO;
+import com.karan.rentmangement.DTO.ResponseDTO.LandlordResponseDTO;
+
 import org.springframework.stereotype.Service;
 import com.karan.rentmangement.repository.LandlordRepo;
 import com.karan.rentmangement.model.Landlord;
@@ -15,17 +17,28 @@ public class AuthService {
         this.landlordRepo = landlordRepo;
     }
 
-    public Landlord login(LoginRequest request) {
+    public LandlordResponseDTO login(LoginRequest request) {
+    Landlord landlord = landlordRepo.findByEmail(request.getEmail())
+        .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Landlord landlord = landlordRepo.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    if (!landlord.getPassword().equals(request.getPassword())) {
+        throw new RuntimeException("Invalid password");
+    }
 
-        if (!landlord.getPassword().equals(request.getPassword())) {
-            throw new RuntimeException("Invalid password");
-        }
+return toResponseDTO(landlord); // MUST include id
+}
 
-        return landlord;
-    }public Landlord signup(SignupRequestDTO dto) {
+private LandlordResponseDTO toResponseDTO(Landlord landlord) {
+    LandlordResponseDTO dto = new LandlordResponseDTO();
+    dto.setId(landlord.getId());
+    dto.setName(landlord.getName());
+    dto.setEmail(landlord.getEmail());
+    dto.setPhone(landlord.getPhone());
+    // Add other fields as needed
+    return dto;
+}
+
+public Landlord signup(SignupRequestDTO dto) {
 
         // 🔥 check if user already exists
         landlordRepo.findByEmail(dto.getEmail())

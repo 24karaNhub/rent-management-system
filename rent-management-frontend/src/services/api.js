@@ -31,6 +31,7 @@ export const deleteTenant = (id) => API.delete(`/tenants/${id}`).then(r => r.dat
 export const getAllPayments = () => API.get("/rent-payments").then(r => r.data);
 export const getPaymentsByTenant = (tenantId) => API.get(`/rent-payments/tenant/${tenantId}`).then(r => r.data);
 export const getPaymentsByMonth = (month, year) => API.get("/rent-payments", { params: { month, year } }).then(r => r.data);
+export const getPaymentsByLandlord = (id) => API.get(`/rent-payments/landlord/${id}`).then(r => r.data);
 export const createPayment = (data) => API.post("/rent-payments", data).then(r => r.data);
 export const updatePayment = (id, data) => API.put(`/rent-payments/${id}`, data).then(r => r.data);
 export const getPaymentById = (id) =>

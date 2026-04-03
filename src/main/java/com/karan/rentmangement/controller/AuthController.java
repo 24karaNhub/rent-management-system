@@ -5,6 +5,7 @@ import com.karan.rentmangement.service.AuthService;
 import com.karan.rentmangement.model.Landlord;
 import com.karan.rentmangement.DTO.RequestDTO.LoginRequest;
 import com.karan.rentmangement.DTO.RequestDTO.SignupRequestDTO;
+import com.karan.rentmangement.DTO.ResponseDTO.LandlordResponseDTO;
 
 @RestController
 @RequestMapping("/auth")
@@ -17,7 +18,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Landlord login(@RequestBody LoginRequest request) {
+    public LandlordResponseDTO login(@RequestBody LoginRequest request) {
         return authService.login(request);
     }
 

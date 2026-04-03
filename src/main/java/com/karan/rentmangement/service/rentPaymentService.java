@@ -126,6 +126,14 @@ public class rentPaymentService {
 
     return tResponseDTO(payment);
 }
+public List<RentPaymentResponseDTO> getAllPaymentByLandlord(int id){
+    Landlord landlord = this.landlordRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Landlord not found"));
+    return rentpaymentRepo.findByLandlordId(id)
+            .stream()
+            .map(this::tResponseDTO)
+            .toList();
+}
     public List<RentPaymentResponseDTO> getAllPayments() {
 
     return rentpaymentRepo.findAll()
