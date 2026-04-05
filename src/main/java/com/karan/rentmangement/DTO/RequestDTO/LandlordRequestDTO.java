@@ -21,4 +21,6 @@ public class LandlordRequestDTO {
     @Size(min = 10, max = 10, message = "Phone must be 10 digits")
     private String phone;
     private int id;
+    private String password;
+
 }

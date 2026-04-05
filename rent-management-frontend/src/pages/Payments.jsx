@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAllPayments, createPayment } from "../services/api";
+import {getAllPayments, createPayment, getPaymentsByLandlord} from "../services/api";
 import { Card } from "../components/ui/Card";
 import { Table } from "../components/ui/Table";
 import { Button } from "../components/ui/Button";
@@ -12,7 +12,8 @@ export default function Payments() {
   async function load() {
     setLoading(true);
     try {
-      const data = await getAllPayments();
+      const landlordId=localStorage.getItem("landlordId")
+      const data = await getPaymentsByLandlord(landlordId);
       setPayments(Array.isArray(data) ? data : []);
     } catch (e) {
       setError(e.message);

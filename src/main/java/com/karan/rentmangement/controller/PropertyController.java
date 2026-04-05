@@ -82,9 +82,10 @@ public class PropertyController {
         return ResponseEntity
                 .ok(propertyService.getTenantsOfProperty(id));
     }
-    @GetMapping("/landlord/{id}")
-    public ResponseEntity<List<PropertyResponseDTO>> getPropertiesByLandlord(@PathVariable int id) {
-        return ResponseEntity.ok((List<PropertyResponseDTO>) propertyService.getPropertiesByLandlord(id));
+    // GET /property/landlord/10  → only landlord 10's properties
+    @GetMapping("/landlord/{landlordId}")
+    public List<PropertyResponseDTO> getByLandlord(@PathVariable int landlordId) {
+        return propertyService.getPropertiesByLandlord(landlordId);
     }
     // ✅ GET PAYMENTS OF PROPERTY
     @GetMapping("/{id}/payments")

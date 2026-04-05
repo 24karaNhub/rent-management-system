@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { getAllProperties, createProperty } from "../services/api";
+import { getPropertiesByLandlord } from"../services/api.js";
 import { Card } from "../components/ui/Card";
 import { Table } from "../components/ui/Table";
 import { Button } from "../components/ui/Button";
 import { Modal } from "../components/ui/Modal";
 
 function AddPropertyModal({ isOpen, onClose, onSaved }) {
-  const [form, setForm] = useState({ name: "", address: "", totalUnits: "", monthlyRent: "" });
+  const [form, setForm] = useState({ type: "", rent: "", city: "", address: "" , landlord_id: ""});
   const [saving, setSaving] = useState(false);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
@@ -14,10 +15,14 @@ function AddPropertyModal({ isOpen, onClose, onSaved }) {
   async function handleSave() {
     setSaving(true);
     try {
+      const landlordId=localStorage.getItem("landlordId")
       await createProperty({
         ...form,
-        totalUnits: parseInt(form.totalUnits) || 0,
-        monthlyRent: parseFloat(form.monthlyRent) || 0
+        type:form.type,
+        rent: parseFloat(form.rent) || 0,
+        city: form.city,
+        address: form.address,
+        landlord_id: parseInt(landlordId)
       });
       onSaved();
       onClose();
@@ -29,48 +34,44 @@ function AddPropertyModal({ isOpen, onClose, onSaved }) {
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Add New Property">
-      <div className="space-y-5">
-        <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Property Name</label>
-          <input 
-            type="text" name="name" 
-            value={form.name} onChange={handleChange} 
-            className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Address</label>
-          <input 
-            type="text" name="address" 
-            value={form.address} onChange={handleChange} 
-            className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400"
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-4">
+      <Modal isOpen={isOpen} onClose={onClose} title="Add New Property">
+        <div className="space-y-5">
           <div>
-            <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Total Units</label>
-            <input 
-              type="number" name="totalUnits" 
-              value={form.totalUnits} onChange={handleChange} 
-              className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400"
+            <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Property Type</label>
+            <input type="text" name="type" value={form.type} onChange={handleChange}
+                   placeholder="e.g. Flat, Villa, Shop"
+                   className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400"
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Monthly Rent</label>
-            <input 
-              type="number" name="monthlyRent" 
-              value={form.monthlyRent} onChange={handleChange} 
-              className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400"
+            <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Rent (₹)</label>
+            <input type="number" name="rent" value={form.rent} onChange={handleChange}
+                   placeholder="e.g. 12000"
+                   className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400"
             />
           </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">City</label>
+              <input type="text" name="city" value={form.city} onChange={handleChange}
+                     placeholder="e.g. Noida"
+                     className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Address</label>
+              <input type="text" name="address" value={form.address} onChange={handleChange}
+                     placeholder="e.g. Sector 12"
+                     className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
+            <Button variant="secondary" onClick={onClose}>Cancel</Button>
+            <Button variant="primary" loading={saving} onClick={handleSave}>Save Property</Button>
+          </div>
         </div>
-        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
-          <Button variant="secondary" onClick={onClose}>Cancel</Button>
-          <Button variant="primary" loading={saving} onClick={handleSave}>Save Property</Button>
-        </div>
-      </div>
-    </Modal>
+      </Modal>
   );
 }
 
@@ -83,7 +84,9 @@ export default function Properties() {
   async function load() {
     setLoading(true);
     try {
-      const data = await getAllProperties();
+      const landlordId=localStorage.getItem("landlordId")
+      if(!landlordId){setError("Not logged In."); return;}
+      const data = await getPropertiesByLandlord(landlordId);
       setProperties(Array.isArray(data) ? data : []);
     } catch (e) {
       setError(e.message);

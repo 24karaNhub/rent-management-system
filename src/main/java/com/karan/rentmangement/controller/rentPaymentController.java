@@ -39,9 +39,9 @@ public class rentPaymentController {
         String message = rentpaymentService.deleteRentpayment(id);
         return ResponseEntity.ok(message);
     }
-    @GetMapping("/landlord/{id}")
-    public ResponseEntity<List<RentPaymentResponseDTO>> getallandlord(@PathVariable int id){
-        return ResponseEntity.ok(rentpaymentService.getAllPaymentByLandlord(id));
+    @GetMapping("/landlord/{landlordId}")
+    public ResponseEntity<List<RentPaymentResponseDTO>> getallandlord(@PathVariable int landlordId) {
+        return ResponseEntity.ok(rentpaymentService.getAllPaymentByLandlord(landlordId));
     }
 
     @GetMapping("/{id}")

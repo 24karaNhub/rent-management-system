@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAllTenants, createTenant } from "../services/api";
+import {getAllTenants, createTenant, getTenantsByLandlord} from "../services/api";
 import { Card } from "../components/ui/Card";
 import { Table } from "../components/ui/Table";
 import { Button } from "../components/ui/Button";
@@ -11,8 +11,9 @@ function fmt(n) {
 
 function AddTenantModal({ isOpen, onClose, onSaved }) {
   const [form, setForm] = useState({
-    name: "", phone: "", email: "", propertyName: "", unitNumber: "",
-    rentAmount: "", securityDeposit: "", moveInDate: "", status: "ACTIVE", aadharNumber: "",
+    name: "", phone: "", email: "",
+    rentAmount: "", aadharNumber: "",
+    moveInDate: "", property_id: ""  // ✅ add property_id, remove unused fields
   });
   const [saving, setSaving] = useState(false);
 
@@ -22,17 +23,19 @@ function AddTenantModal({ isOpen, onClose, onSaved }) {
     if (!form.name || !form.phone) { alert("Name and phone are required."); return; }
     setSaving(true);
     try {
+      const landlordId = localStorage.getItem("landlordId"); // ✅ dynamic, not hardcoded 1
       await createTenant({
         name: form.name,
         email: form.email,
         phone: form.phone,
         rent: parseFloat(form.rentAmount) || 0,
-        moveInDate: form.moveInDate,
+        aadhar: form.aadharNumber,       // ✅ field name must match DTO
+        MoveInDate: form.moveInDate,     // ✅ capital M — must match DTO exactly
         moveOutDate: null,
-        landlord_id: 1,
-        property_id: 1 
+        landlord_id: parseInt(landlordId), // ✅ from localStorage, not hardcoded
+        property_id: parseInt(form.property_id) // ✅ from form
       });
-      onSaved(); 
+      onSaved();
       onClose();
     } catch (e) {
       alert("Could not save: " + e.message);
@@ -103,7 +106,8 @@ export default function Tenants() {
   async function load() {
     setLoading(true);
     try {
-      const data = await getAllTenants();
+      const landlordId=localStorage.getItem("landlordId")
+      const data = await getTenantsByLandlord(landlordId);
       setTenants(Array.isArray(data) ? data : []);
     } catch (e) {
       setError(e.message);

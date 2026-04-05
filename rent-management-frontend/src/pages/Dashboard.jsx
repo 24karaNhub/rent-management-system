@@ -127,15 +127,14 @@ export default function Dashboard() {
         setLoading(false);
         return;
       }
-      
-      const [l, p, t, pay] = await Promise.all([
-        getAllLandlords(), // keep for now
+
+      const [p, t, pay] = await Promise.all([
         getPropertiesByLandlord(landlordId).catch(() => []),
         getTenantsByLandlord(landlordId).catch(() => []),
         getPaymentsByLandlord(landlordId).catch(() => [])
       ]);
       
-      const landlords = Array.isArray(l) ? l.length : 0;
+      const landlords = 1;
       const properties = Array.isArray(p) ? p.length : 0;
       const tenants = Array.isArray(t) ? t.length : 0;
       
@@ -234,7 +233,7 @@ export default function Dashboard() {
         <>
           <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard 
-              label="Total Landlords" value={summary.landlords} sub="Registered platform owners" 
+              label="Welcome Back" value={JSON.parse(localStorage.getItem('user'))?.name || "Landlord"} sub="Your personal Dashboard"
               gradient="bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-indigo-500/20"
               icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>}
             />

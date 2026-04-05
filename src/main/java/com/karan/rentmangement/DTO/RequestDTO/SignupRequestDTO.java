@@ -1,4 +1,8 @@
 package com.karan.rentmangement.DTO.RequestDTO;
+
+import lombok.Data;
+
+@Data
 public class SignupRequestDTO {
     private String name;
     private String email;

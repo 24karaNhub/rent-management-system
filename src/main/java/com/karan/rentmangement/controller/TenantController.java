@@ -49,11 +49,10 @@ public class TenantController {
         return 
         ResponseEntity.ok(tenantService.updateTenant(id,dto));
     }
-    @GetMapping("/landlord/{id}")
-    public ResponseEntity<List<TenantResponseDTO>> getTenantsByLandlord(@PathVariable int id){
-        return ResponseEntity.ok(tenantService.getTenantsByLandlord(id));
+    @GetMapping("/landlord/{landlordId}")
+    public ResponseEntity<List<TenantResponseDTO>> getTenantsByLandlord(@PathVariable int landlordId) {
+        return ResponseEntity.ok(tenantService.getTenantsByLandlord(landlordId));
     }
-
     @DeleteMapping("/{id}")
 public ResponseEntity<String> deleteTenant(@PathVariable int id){
     

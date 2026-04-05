@@ -42,6 +42,7 @@ public class LandlordService {
         landlord.setName(dto.getName());
         landlord.setEmail(dto.getEmail());
         landlord.setPhone(dto.getPhone());
+        landlord.setPassword(dto.getPassword());
         return landlord;
     }
 
