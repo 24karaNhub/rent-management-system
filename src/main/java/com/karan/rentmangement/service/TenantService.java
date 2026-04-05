@@ -110,8 +110,8 @@ public LandlordResponseDTO toLandlordDTO(Landlord landlord){
     tenant.setEmail(dto.getEmail());
     tenant.setPhone(dto.getPhone());
     tenant.setRent(dto.getRent());
-    tenant.setMoveInDate(LocalDate.parse(dto.getMoveInDate()));
-    tenant.setMoveOutDate(LocalDate.parse(dto.getMoveOutDate()));
+    tenant.setMoveInDate(dto.getMoveInDate() != null ? LocalDate.parse(dto.getMoveInDate()) : null);
+    tenant.setMoveOutDate(dto.getMoveOutDate() != null ? LocalDate.parse(dto.getMoveOutDate()) : null);
 
     // 2️⃣ Handle landlord relation
     Landlord landlord = landlordRepo.findById(dto.getLandlord_id())

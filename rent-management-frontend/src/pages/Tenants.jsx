@@ -30,7 +30,7 @@ function AddTenantModal({ isOpen, onClose, onSaved }) {
         phone: form.phone,
         rent: parseFloat(form.rentAmount) || 0,
         aadhar: form.aadharNumber,       // ✅ field name must match DTO
-        MoveInDate: form.moveInDate,     // ✅ capital M — must match DTO exactly
+        MoveInDate: form.MoveInDate,     // ✅ capital M — must match DTO exactly
         moveOutDate: null,
         landlord_id: parseInt(landlordId), // ✅ from localStorage, not hardcoded
         property_id: parseInt(form.property_id) // ✅ from form
@@ -45,53 +45,42 @@ function AddTenantModal({ isOpen, onClose, onSaved }) {
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Add New Tenant" maxWidth="max-w-xl">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Full Name</label>
-          <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="Ramesh Gupta" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
+      <Modal isOpen={isOpen} onClose={onClose} title="Add New Tenant" maxWidth="max-w-xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Full Name</label>
+            <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="Ramesh Gupta" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Phone Number</label>
+            <input type="text" name="phone" value={form.phone} onChange={handleChange} placeholder="9876543210" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Email</label>
+            <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="ramesh@example.com" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Monthly Rent (₹)</label>
+            <input type="number" name="rentAmount" value={form.rentAmount} onChange={handleChange} placeholder="12000" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Move-in Date</label>
+            <input type="date" name="moveInDate" value={form.moveInDate} onChange={handleChange} className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all" />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Property ID</label>
+            <input type="number" name="property_id" value={form.property_id} onChange={handleChange} placeholder="Enter property ID" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Aadhaar Number</label>
+            <input type="text" name="aadharNumber" value={form.aadharNumber} onChange={handleChange} placeholder="1234-5678-9012" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Phone Number</label>
-          <input type="text" name="phone" value={form.phone} onChange={handleChange} placeholder="9876543210" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
+        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
+          <Button variant="secondary" onClick={onClose}>Cancel</Button>
+          <Button variant="primary" loading={saving} onClick={handleSave}>Add Tenant</Button>
         </div>
-        <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Property</label>
-          <input type="text" name="propertyName" value={form.propertyName} onChange={handleChange} placeholder="Shanti Nagar" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Unit / Flat No.</label>
-          <input type="text" name="unitNumber" value={form.unitNumber} onChange={handleChange} placeholder="Flat 2B" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Monthly Rent (₹)</label>
-          <input type="number" name="rentAmount" value={form.rentAmount} onChange={handleChange} placeholder="0" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Security Deposit (₹)</label>
-          <input type="number" name="securityDeposit" value={form.securityDeposit} onChange={handleChange} placeholder="0" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Move-in Date</label>
-          <input type="date" name="moveInDate" value={form.moveInDate} onChange={handleChange} className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all" />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Status</label>
-          <select name="status" value={form.status} onChange={handleChange} className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all">
-            <option value="ACTIVE">Active</option>
-            <option value="INACTIVE">Inactive</option>
-          </select>
-        </div>
-        <div className="sm:col-span-2">
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Aadhaar / ID Number</label>
-          <input type="text" name="aadharNumber" value={form.aadharNumber} onChange={handleChange} placeholder="1234-5678-9012" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
-        </div>
-      </div>
-      <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
-        <Button variant="secondary" onClick={onClose}>Cancel</Button>
-        <Button variant="primary" loading={saving} onClick={handleSave}>Add Tenant</Button>
-      </div>
-    </Modal>
+      </Modal>
   );
 }
 
