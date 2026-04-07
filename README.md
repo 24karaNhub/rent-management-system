@@ -1,112 +1,117 @@
-# Rent Management System
+# RentOS — Rental Management System
 
-A backend REST API built for small and medium landlords in India who manage
-properties and rent on notebooks or Excel sheets — built to solve a real gap
-in simple, affordable property management.
+> A full-stack platform built for small landlords in India — replacing Excel sheets and WhatsApp tracking with structured, automated rent management.
 
-## Why I Built This
+<!-- Add a screenshot or GIF here once deployed -->
+<!-- ![Dashboard preview](./docs/preview.png) -->
 
-While observing how rental properties are managed in India, I noticed most
-small landlords track rent, due dates, and tenant info manually. This project
-is a structured backend solution built specifically for that gap — designed
-for landlords managing 1–10 properties who need something simple but reliable.
+---
+
+## The problem
+
+Most landlords managing 1–10 properties still rely on Excel sheets, WhatsApp groups, and manual calculations. RentOS replaces that with structured data, automated tracking, and a clean dashboard — all tied to a proper multi-tenant backend.
+
+---
+
+## Tech stack
+
+**Backend** — Java 17, Spring Boot 3, Spring Data JPA / Hibernate, MySQL, Maven  
+**Frontend** — React.js, Tailwind CSS, Axios
+
+---
 
 ## Features
 
-- Landlord and tenant management
-- Property tracking with tenant assignments
-- Rent payment recording and history
-- Relationship tracking — landlord → properties → tenants → payments
-- Input validation and structured error responses
-- Role-based JWT authentication (in progress)
+### Authentication
+- Login and signup with landlord-scoped data isolation
+- JWT authentication (in progress)
 
-## Tech Stack
+### Dashboard
+- Personalized view per landlord — total properties, tenants, and revenue at a glance
+- Recent transactions and dark mode support
 
-- Java 17
-- Spring Boot 3
-- Spring Data JPA / Hibernate
-- Spring Security + JWT
-- MySQL
-- Maven
+### Property management
+- Add and view properties with rent amount and location tracking
 
-## API Endpoints
+### Tenant management
+- Add tenants with property assignment and move-in date tracking
 
-### Landlord
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /landlords | Create landlord |
-| GET | /landlords | Get all landlords |
-| GET | /landlords/{id} | Get by ID |
-| PUT | /landlords/{id} | Update landlord |
-| DELETE | /landlords/{id} | Delete landlord |
+### Rent payments
+- Record and track payments linked to tenant, property, and landlord
 
-### Property
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /properties | Add property |
-| GET | /properties | Get all properties |
-| GET | /properties/{id} | Get by ID |
-| PUT | /properties/{id} | Update property |
-| DELETE | /properties/{id} | Delete property |
-| GET | /properties/{id}/tenants | Get tenants of property |
-| GET | /properties/{id}/payments | Get payments of property |
+### Excel import
+- Bulk upload rent and payment data via `.xlsx` files
 
-### Tenant
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /tenants | Add tenant |
-| GET | /tenants | Get all tenants |
-| GET | /tenants/{id} | Get by ID |
-| PUT | /tenants/{id} | Update tenant |
-| DELETE | /tenants/{id} | Delete tenant |
-| GET | /tenants/{id}/payments | Get payments of tenant |
+---
 
-### Rent Payment
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /rent-payments | Record payment |
-| GET | /rent-payments | Get all payments |
-| GET | /rent-payments/{id} | Get by ID |
-| PUT | /rent-payments/{id} | Update payment |
-| DELETE | /rent-payments/{id} | Delete payment |
+## Architecture
+```
+Landlord → Property → Tenant → Payment
+```
 
-## How to Run Locally
+Key engineering decisions: multi-tenant data isolation, proper DTO separation (Request / Response), cascade + orphan removal handling, and Bean Validation edge-case fixes.
+
+---
+
+## API reference
+```
+POST   /auth/signup
+POST   /auth/login
+
+GET    /properties/landlord/{id}
+GET    /tenants/landlord/{id}
+GET    /rent-payments/landlord/{id}
+```
+
+---
+
+## Run locally
 ```bash
-# 1. Clone the repository
-git clone https://github.com/yourusername/rent-management
+git clone https://github.com/24karaNhub/rent-management-system.git
 
-# 2. Create a MySQL database
-CREATE DATABASE rent_management;
-
-# 3. Configure your credentials in src/main/resources/application.properties
-spring.datasource.url=jdbc:mysql://localhost:3306/rent_management
-spring.datasource.username=your_username
-spring.datasource.password=your_password
-
-# 4. Run the application
+# Backend
+cd backend
 ./mvnw spring-boot:run
 
-# App runs on http://localhost:8080
+# Frontend
+cd rent-management-frontend
+npm install
+npm run dev
 ```
 
-## Project Structure
-```
-src/main/java/com/karan/rentmanagement/
-├── controller/      # REST controllers
-├── service/         # Business logic
-├── repository/      # JPA repositories
-├── entity/          # Database entities
-├── dto/             # Request and response DTOs
-├── exception/       # Custom exceptions + global handler
-└── security/        # JWT filter and config
-```
+> Requires Java 17, Node.js 18+, and a running MySQL instance. Configure your DB credentials in `application.properties`.
+
+---
+
+## Status
+
+| Feature | Status |
+|---|---|
+| Auth system | Done |
+| Personalized data | Done |
+| Dashboard | Done |
+| Properties, tenants, payments | Done |
+| Excel import | Done |
+| Dark mode | Done |
+| JWT security | In progress |
+
+---
 
 ## Roadmap
 
-- [x] Core CRUD APIs — landlord, tenant, property, payments
-- [x] Input validation and exception handling
-- [x] DTO pattern — request/response separation
-- [ ] JWT authentication with role-based access
-- [ ] Scheduled rent reminders
-- [ ] Deployment — Railway / Render
-- [ ] Tenant complaint and maintenance requests
+- JWT route protection
+- Edit / update flows for properties and tenants
+- Property → Tenant dropdown linking
+- Payment analytics with monthly trends
+- Due date reminders and notifications
+- Deployment (Render / Railway)
+
+---
+
+## Author
+
+**Karan Chaudhary** — BTech Cyber Security | Full Stack Developer  
+[GitHub](https://github.com/24karaNhub) · [LinkedIn](https://www.linkedin.com/in/karan-chaudhary-a58954313/)
+
+---
+
