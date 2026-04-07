@@ -47,30 +47,30 @@ function AddLandlordModal({ isOpen, onClose, onSaved }) {
           </div>
         )}
         <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Full Name</label>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Full Name</label>
           <input
             type="text" name="name" value={form.name} onChange={handleChange} placeholder="e.g. Karan Singh"
-            className={`w-full rounded-xl border ${errors.name ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20' : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20'} px-4 py-2.5 bg-slate-50/50 outline-none focus:ring-2 text-sm transition-all placeholder:text-slate-400`}
+            className={`w-full rounded-xl border ${errors.name ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20' : 'border-slate-200 dark:border-slate-700 focus:border-indigo-500 focus:ring-indigo-500/20'} px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:ring-2 text-sm transition-all placeholder:text-slate-400`}
           />
           {errors.name && <p className="text-rose-500 text-xs mt-1.5 font-medium pl-1">{errors.name}</p>}
         </div>
         <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Email Address</label>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Email Address</label>
           <input
             type="email" name="email" value={form.email} onChange={handleChange} placeholder="e.g. karan@gmail.com"
-            className={`w-full rounded-xl border ${errors.email ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20' : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20'} px-4 py-2.5 bg-slate-50/50 outline-none focus:ring-2 text-sm transition-all placeholder:text-slate-400`}
+            className={`w-full rounded-xl border ${errors.email ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20' : 'border-slate-200 dark:border-slate-700 focus:border-indigo-500 focus:ring-indigo-500/20'} px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:ring-2 text-sm transition-all placeholder:text-slate-400`}
           />
           {errors.email && <p className="text-rose-500 text-xs mt-1.5 font-medium pl-1">{errors.email}</p>}
         </div>
         <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Phone Number</label>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Phone Number</label>
           <input
             type="text" name="phone" value={form.phone} onChange={handleChange} placeholder="10 Digits"
-            className={`w-full rounded-xl border ${errors.phone ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20' : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20'} px-4 py-2.5 bg-slate-50/50 outline-none focus:ring-2 text-sm transition-all placeholder:text-slate-400`}
+            className={`w-full rounded-xl border ${errors.phone ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20' : 'border-slate-200 dark:border-slate-700 focus:border-indigo-500 focus:ring-indigo-500/20'} px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:ring-2 text-sm transition-all placeholder:text-slate-400`}
           />
           {errors.phone && <p className="text-rose-500 text-xs mt-1.5 font-medium pl-1">{errors.phone}</p>}
         </div>
-        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
+        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100 dark:border-slate-700">
           <Button variant="secondary" onClick={onClose}>Cancel</Button>
           <Button variant="primary" loading={saving} onClick={handleSave}>Save Landlord</Button>
         </div>
@@ -104,10 +104,10 @@ export default function Landlords() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 bg-white/40 p-6 rounded-3xl border border-slate-200/60 backdrop-blur-sm shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 bg-white/40 dark:bg-slate-800/40 p-6 rounded-3xl border border-slate-200/60 dark:border-slate-700/60 backdrop-blur-sm shadow-sm">
         <div>
-          <h1 className="text-3xl font-display font-bold text-slate-900 tracking-tight">Landlords</h1>
-          <p className="text-sm font-medium text-slate-500 mt-1">Manage platform property owners and their details.</p>
+          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-slate-100 tracking-tight">Landlords</h1>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Manage platform property owners and their details.</p>
         </div>
         <Button variant="primary" onClick={() => setShowForm(true)}>
           <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
@@ -116,23 +116,23 @@ export default function Landlords() {
       </div>
 
       <div className="flex gap-4">
-        <div className="bg-white/60 backdrop-blur-md border border-slate-200/60 rounded-2xl px-6 py-4 flex items-center gap-4 shadow-sm min-w-44">
+        <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-slate-200/60 dark:border-slate-700/60 rounded-2xl px-6 py-4 flex items-center gap-4 shadow-sm min-w-44">
           <div>
-            <p className="text-3xl font-display font-bold text-indigo-600">{total}</p>
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-0.5">Total</p>
+            <p className="text-3xl font-display font-bold text-indigo-600 dark:text-indigo-400">{total}</p>
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-0.5">Total</p>
           </div>
         </div>
-        <div className="bg-white/60 backdrop-blur-md border border-slate-200/60 rounded-2xl px-6 py-4 flex items-center gap-4 shadow-sm min-w-44">
+        <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-slate-200/60 dark:border-slate-700/60 rounded-2xl px-6 py-4 flex items-center gap-4 shadow-sm min-w-44">
           <div>
-            <p className="text-3xl font-display font-bold text-slate-800">{active}</p>
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-0.5">Active</p>
+            <p className="text-3xl font-display font-bold text-slate-800 dark:text-slate-200">{active}</p>
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-0.5">Active</p>
           </div>
         </div>
       </div>
 
       {loading ? (
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {[1,2,3].map(i => <div key={i} className="h-48 bg-slate-200/50 rounded-3xl animate-pulse"></div>)}
+          {[1,2,3].map(i => <div key={i} className="h-48 bg-slate-200/50 dark:bg-slate-700/50 rounded-3xl animate-pulse"></div>)}
         </div>
       ) : (
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
@@ -140,23 +140,23 @@ export default function Landlords() {
             <div
               key={l.id}
               onClick={() => navigate(`/landlords/${l.id}`)}
-              className="bg-white/80 backdrop-blur-md p-6 rounded-3xl border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
+              className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md p-6 rounded-3xl border border-slate-200/80 dark:border-slate-700/80 hover:border-indigo-300 dark:hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/10 dark:hover:shadow-indigo-500/5 hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
             >
               <div className="flex justify-between items-start mb-5">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-white flex items-center justify-center text-xl font-bold shadow-md shadow-indigo-500/30 group-hover:scale-110 transition-transform duration-300">
                   <span className="drop-shadow-sm">{l.name?.charAt(0).toUpperCase() || 'U'}</span>
                 </div>
-                <div className="bg-indigo-50 text-indigo-600 text-xs font-bold px-3 py-1.5 rounded-full border border-indigo-100">
+                <div className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-bold px-3 py-1.5 rounded-full border border-indigo-100 dark:border-indigo-800/50">
                   ID: {l.id}
                 </div>
               </div>
-              <h3 className="text-xl font-display font-bold text-slate-900 tracking-tight mb-3 group-hover:text-indigo-700 transition-colors">{l.name}</h3>
-              <div className="space-y-2 bg-slate-50/50 p-3 rounded-xl border border-slate-100/50">
-                <p className="text-sm font-medium text-slate-600 flex items-center gap-2">
+              <h3 className="text-xl font-display font-bold text-slate-900 dark:text-slate-100 tracking-tight mb-3 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">{l.name}</h3>
+              <div className="space-y-2 bg-slate-50/50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100/50 dark:border-slate-700/50">
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 flex items-center gap-2">
                   <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                   {l.email || "No Email Provided"}
                 </p>
-                <p className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 flex items-center gap-2">
                   <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
                   {l.phone || "No Phone Provided"}
                 </p>

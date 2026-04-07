@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { 
   getAllLandlords, 
   getPropertiesByLandlord, 
   getTenantsByLandlord, 
   getPaymentsByLandlord, 
-  createPayment 
+  createPayment,
+  importFromExcel
 } from "../services/api";
 import { Card } from "../components/ui/Card";
 import { Table } from "../components/ui/Table";
@@ -58,34 +59,34 @@ function AddPaymentModal({ isOpen, onClose, onSaved }) {
     <Modal isOpen={isOpen} onClose={onClose} title="Add New Payment" maxWidth="max-w-md">
       <div className="space-y-5">
         <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Tenant Name</label>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Tenant Name</label>
           <input 
             type="text" name="tenantName" placeholder="e.g. Ramesh Gupta"
             value={form.tenantName} onChange={handleChange} 
-            className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400"
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400"
           />
         </div>
         <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Property / Unit</label>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Property / Unit</label>
           <input 
             type="text" name="propertyName" placeholder="e.g. Flat 2B"
             value={form.propertyName} onChange={handleChange} 
-            className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400"
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400"
           />
         </div>
         <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Amount (₹)</label>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Amount (₹)</label>
           <input 
             type="number" name="amount" placeholder="e.g. 12000"
             value={form.amount} onChange={handleChange} 
-            className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400"
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400"
           />
         </div>
         <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Status</label>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Status</label>
           <select 
             name="status" value={form.status} onChange={handleChange}
-            className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all"
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all"
           >
             <option value="PAID">Paid</option>
             <option value="PENDING">Pending</option>
@@ -93,15 +94,15 @@ function AddPaymentModal({ isOpen, onClose, onSaved }) {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Due / Paid Date</label>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Due / Paid Date</label>
           <input 
             type="date" name="dueDate"
             value={form.dueDate} onChange={handleChange} 
-            className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all"
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all [color-scheme:light_dark]"
           />
         </div>
         
-        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
+        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100 dark:border-slate-700">
           <Button variant="secondary" onClick={onClose}>Cancel</Button>
           <Button variant="primary" loading={saving} onClick={handleSave}>Save Payment</Button>
         </div>
@@ -116,6 +117,9 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [importing, setImporting] = useState(false);
+  
+  const fileInputRef = useRef(null);
 
   async function loadData() {
     setLoading(true);
@@ -158,6 +162,36 @@ export default function Dashboard() {
   }
 
   useEffect(() => { loadData(); }, []);
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const landlordId = localStorage.getItem("landlordId");
+    if (!landlordId) {
+      alert("Please login first.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("landlordId", landlordId);
+
+    setImporting(true);
+    try {
+      const res = await importFromExcel(formData);
+      alert(res || "Import successful!");
+      loadData(); // refresh dashboard data
+    } catch (err) {
+      alert("Failed to import Excel file: " + (err.response?.data?.message || err.message));
+    } finally {
+      setImporting(false);
+      // Reset input so the same file can be uploaded again if needed
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
 
   const columns = [
     { 
@@ -208,15 +242,28 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 bg-white/40 p-6 rounded-3xl border border-slate-200/60 backdrop-blur-sm shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 bg-white/40 dark:bg-slate-800/40 p-6 rounded-3xl border border-slate-200/60 dark:border-slate-700/60 backdrop-blur-sm shadow-sm">
         <div>
-          <h1 className="text-3xl font-display font-bold text-slate-900 tracking-tight">Dashboard Overview</h1>
-          <p className="text-sm font-medium text-slate-500 mt-1">Metrics and performance of your real estate portfolio.</p>
+          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-slate-100 tracking-tight">Dashboard Overview</h1>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Metrics and performance of your real estate portfolio.</p>
         </div>
-        <Button variant="primary" onClick={() => setShowModal(true)}>
-          <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-          Add Payment
-        </Button>
+        <div className="flex gap-3">
+          <input 
+            type="file" 
+            accept=".xlsx, .xls"
+            ref={fileInputRef} 
+            onChange={handleFileUpload} 
+            className="hidden" 
+          />
+          <Button variant="secondary" loading={importing} onClick={() => fileInputRef.current?.click()}>
+             <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+             {importing ? "Importing..." : "Import Excel"}
+          </Button>
+          <Button variant="primary" onClick={() => setShowModal(true)}>
+            <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+            Add Payment
+          </Button>
+        </div>
       </div>
 
       {error && (

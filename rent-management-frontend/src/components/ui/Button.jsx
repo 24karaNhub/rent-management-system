@@ -11,9 +11,9 @@ export function Button({
   
   const variants = {
     primary: "bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white focus:ring-indigo-500 shadow-indigo-500/30 hover:shadow-md hover:shadow-indigo-500/40 hover:-translate-y-0.5",
-    secondary: "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 focus:ring-slate-200 hover:border-slate-300",
+    secondary: "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100 focus:ring-slate-200 dark:focus:ring-slate-700 hover:border-slate-300 dark:hover:border-slate-600",
     danger: "bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 text-white focus:ring-rose-500 shadow-rose-500/20 hover:shadow-md hover:shadow-rose-500/40 hover:-translate-y-0.5",
-    ghost: "bg-transparent text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 focus:ring-indigo-100 shadow-none",
+    ghost: "bg-transparent text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-slate-800 focus:ring-indigo-100 dark:focus:ring-slate-700 hover:text-indigo-700 dark:hover:text-slate-200 shadow-none",
     success: "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white focus:ring-emerald-500 shadow-emerald-500/30 hover:shadow-md hover:shadow-emerald-500/40 hover:-translate-y-0.5",
   };
 

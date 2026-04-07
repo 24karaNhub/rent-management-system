@@ -48,35 +48,35 @@ function AddTenantModal({ isOpen, onClose, onSaved }) {
       <Modal isOpen={isOpen} onClose={onClose} title="Add New Tenant" maxWidth="max-w-xl">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
-            <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Full Name</label>
-            <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="Ramesh Gupta" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
+            <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Full Name</label>
+            <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="Ramesh Gupta" className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
           </div>
           <div>
-            <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Phone Number</label>
-            <input type="text" name="phone" value={form.phone} onChange={handleChange} placeholder="9876543210" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
+            <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Phone Number</label>
+            <input type="text" name="phone" value={form.phone} onChange={handleChange} placeholder="9876543210" className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
           </div>
           <div>
-            <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Email</label>
-            <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="ramesh@example.com" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
+            <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Email</label>
+            <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="ramesh@example.com" className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
           </div>
           <div>
-            <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Monthly Rent (₹)</label>
-            <input type="number" name="rentAmount" value={form.rentAmount} onChange={handleChange} placeholder="12000" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
+            <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Monthly Rent (₹)</label>
+            <input type="number" name="rentAmount" value={form.rentAmount} onChange={handleChange} placeholder="12000" className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
           </div>
           <div>
-            <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Move-in Date</label>
-            <input type="date" name="moveInDate" value={form.moveInDate} onChange={handleChange} className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all" />
+            <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Move-in Date</label>
+            <input type="date" name="moveInDate" value={form.moveInDate} onChange={handleChange} className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all [color-scheme:light_dark]" />
           </div>
           <div>
-            <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Property ID</label>
-            <input type="number" name="property_id" value={form.property_id} onChange={handleChange} placeholder="Enter property ID" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
+            <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Property ID</label>
+            <input type="number" name="property_id" value={form.property_id} onChange={handleChange} placeholder="Enter property ID" className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
           </div>
           <div className="sm:col-span-2">
-            <label className="block text-sm font-semibold tracking-tight text-slate-700 mb-1.5">Aadhaar Number</label>
-            <input type="text" name="aadharNumber" value={form.aadharNumber} onChange={handleChange} placeholder="1234-5678-9012" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 bg-slate-50/50 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
+            <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Aadhaar Number</label>
+            <input type="text" name="aadharNumber" value={form.aadharNumber} onChange={handleChange} placeholder="1234-5678-9012" className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400" />
           </div>
         </div>
-        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
+        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100 dark:border-slate-700">
           <Button variant="secondary" onClick={onClose}>Cancel</Button>
           <Button variant="primary" loading={saving} onClick={handleSave}>Add Tenant</Button>
         </div>
@@ -134,8 +134,8 @@ export default function Tenants() {
             )}
           </div>
           <div>
-            <p className="font-semibold text-slate-900 leading-tight">{t.name}</p>
-            <p className="text-xs font-medium text-slate-500 mt-0.5">{t.email || "No Email Provided"}</p>
+            <p className="font-semibold text-slate-900 dark:text-slate-100 leading-tight">{t.name}</p>
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">{t.email || "No Email Provided"}</p>
           </div>
         </div>
       )
@@ -144,8 +144,8 @@ export default function Tenants() {
       header: "Unit Details",
       render: (t) => (
         <div>
-          <p className="text-sm font-semibold text-slate-900">{t.unitNumber || "—"}</p>
-          <p className="text-xs font-medium text-slate-500 bg-slate-100 rounded px-1.5 py-0.5 mt-0.5 inline-block">{t.propertyName || "Unknown Property"}</p>
+          <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t.unitNumber || "—"}</p>
+          <p className="text-xs font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 rounded px-1.5 py-0.5 mt-0.5 inline-block">{t.propertyName || "Unknown Property"}</p>
         </div>
       )
     },
@@ -160,14 +160,14 @@ export default function Tenants() {
     },
     {
       header: "Rent",
-      render: (t) => <span className="font-bold text-slate-900">{fmt(t.rentAmount)}</span>
+      render: (t) => <span className="font-bold text-slate-900 dark:text-slate-100">{fmt(t.rentAmount)}</span>
     },
     {
       header: "Status",
       render: (t) => {
         const isActive = (t.status || "").toUpperCase() === "ACTIVE";
         return (
-          <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full border ${isActive ? 'bg-emerald-50 border-emerald-200 text-emerald-700 shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-600 shadow-sm'}`}>
+          <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full border ${isActive ? 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400 shadow-sm' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 shadow-sm'}`}>
             {isActive ? "Active" : "Inactive"}
           </span>
         );
@@ -177,10 +177,10 @@ export default function Tenants() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 bg-white/40 p-6 rounded-3xl border border-slate-200/60 backdrop-blur-sm shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 bg-white/40 dark:bg-slate-800/40 p-6 rounded-3xl border border-slate-200/60 dark:border-slate-700/60 backdrop-blur-sm shadow-sm">
         <div>
-          <h1 className="text-3xl font-display font-bold text-slate-900 tracking-tight">Tenants</h1>
-          <p className="text-sm font-medium text-slate-500 mt-1">{activeCount} active tenant{activeCount !== 1 ? "s" : ""} across your properties</p>
+          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-slate-100 tracking-tight">Tenants</h1>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">{activeCount} active tenant{activeCount !== 1 ? "s" : ""} across your properties</p>
         </div>
         <Button variant="primary" onClick={() => setShowAdd(true)}>
           <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
@@ -197,7 +197,7 @@ export default function Tenants() {
       <Card title="Tenant Directory">
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1 group">
-            <svg className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <input 
@@ -205,13 +205,13 @@ export default function Tenants() {
               placeholder="Search by name, property, or phone..." 
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none bg-slate-50/50 transition-all font-medium placeholder:text-slate-400"
+              className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 transition-all font-medium placeholder:text-slate-400"
             />
           </div>
           <select 
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value)}
-            className="border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none w-full sm:w-auto bg-slate-50/50 font-medium text-slate-700 transition-all"
+            className="border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none w-full sm:w-auto bg-slate-50/50 dark:bg-slate-800/50 font-medium text-slate-700 dark:text-slate-300 transition-all"
           >
             <option value="ALL">All Status</option>
             <option value="ACTIVE">Active</option>

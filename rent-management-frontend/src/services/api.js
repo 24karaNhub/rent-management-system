@@ -49,4 +49,11 @@ export const loginClient = (data) => API.post("/auth/login", data).then(r => r.d
 export const signupClient = (data) => API.post("/auth/signup", data).then(r => r.data);
 
 
+// EXCEL IMPORT
+export const importFromExcel = (formData) => API.post("/import/excel", formData, {
+  headers: {
+    "Content-Type": "multipart/form-data",
+  },
+}).then(r => r.data);
+
 export default API;
