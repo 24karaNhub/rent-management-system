@@ -33,24 +33,24 @@ export default function Payments() {
             {(p.tenantName || "U").charAt(0).toUpperCase()}
           </div>
           <div>
-            <p className="font-semibold text-slate-900">{p.tenantName || "—"}</p>
-            <p className="text-xs font-medium text-slate-500 mt-0.5">{p.propertyName || p.unitNumber || "—"}</p>
+            <p className="font-semibold text-slate-900 dark:text-slate-100">{p.tenantName || "—"}</p>
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">{p.propertyName || p.unitNumber || "—"}</p>
           </div>
         </div>
       )
     },
     {
       header: "Amount",
-      render: (p) => <span className="font-bold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-md">₹{(p.amount || p.rentAmount || 0).toLocaleString("en-IN")}</span>
+      render: (p) => <span className="font-bold text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md">₹{(p.amount || p.rentAmount || 0).toLocaleString("en-IN")}</span>
     },
     {
       header: "Status",
       render: (p) => {
         const s = (p.status || "pending").toLowerCase();
         const colors = {
-          paid: "bg-emerald-50 border-emerald-200 text-emerald-700 shadow-sm",
-          pending: "bg-amber-50 border-amber-200 text-amber-700 shadow-sm",
-          overdue: "bg-rose-50 border-rose-200 text-rose-700 shadow-sm"
+          paid: "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400 shadow-sm",
+          pending: "bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800/50 text-amber-700 dark:text-amber-400 shadow-sm",
+          overdue: "bg-rose-50 dark:bg-rose-900/30 border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-400 shadow-sm"
         };
         return (
           <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full border ${colors[s] || colors.pending}`}>
@@ -64,7 +64,7 @@ export default function Payments() {
       className: "text-right",
       render: (p) => {
         const d = (p.status || "").toLowerCase() === "paid" ? p.paidDate : p.dueDate;
-        return <span className="text-slate-500 font-medium">{d ? new Date(d).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "—"}</span>;
+        return <span className="text-slate-500 dark:text-slate-400 font-medium">{d ? new Date(d).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "—"}</span>;
       }
     }
   ];
@@ -75,25 +75,25 @@ export default function Payments() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 bg-white/40 p-6 rounded-3xl border border-slate-200/60 backdrop-blur-sm shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 bg-white/40 dark:bg-slate-800/40 p-6 rounded-3xl border border-slate-200/60 dark:border-slate-700/60 backdrop-blur-sm shadow-sm">
         <div>
-          <h1 className="text-3xl font-display font-bold text-slate-900 tracking-tight">Payments</h1>
-          <p className="text-sm font-medium text-slate-500 mt-1">Review all rent and asset transactions globally.</p>
+          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-slate-100 tracking-tight">Payments</h1>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Review all rent and asset transactions globally.</p>
         </div>
         <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-[2px] rounded-2xl shadow-lg shadow-emerald-500/20">
-          <div className="bg-white/90 backdrop-blur px-6 py-3 rounded-2xl">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-0.5">Total Collected</span>
-              <span className="text-xl font-display font-bold text-emerald-600 block">₹{totalCollected.toLocaleString("en-IN")}</span>
+          <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur px-6 py-3 rounded-2xl">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest block mb-0.5">Total Collected</span>
+              <span className="text-xl font-display font-bold text-emerald-600 dark:text-emerald-400 block">₹{totalCollected.toLocaleString("en-IN")}</span>
           </div>
         </div>
       </div>
 
       {error ? (
-        <div className="p-4 bg-rose-50/80 backdrop-blur-sm text-rose-700 border border-rose-200 rounded-2xl text-sm shadow-sm">
+        <div className="p-4 bg-rose-50/80 dark:bg-rose-900/30 backdrop-blur-sm text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800/50 rounded-2xl text-sm shadow-sm">
           Warning: Could not fetch data. {error}
         </div>
       ) : loading ? (
-        <div className="h-96 bg-slate-200/50 rounded-3xl animate-pulse"></div>
+        <div className="h-96 bg-slate-200/50 dark:bg-slate-700/50 rounded-3xl animate-pulse"></div>
       ) : (
         <Card title="Global Ledger">
           <Table columns={columns} data={payments} keyExtractor={p => p.id} emptyMessage="No transactions stored in database." />
