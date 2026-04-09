@@ -23,7 +23,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public Landlord signup(@RequestBody SignupRequestDTO dto) {
+    public LandlordResponseDTO signup(@RequestBody SignupRequestDTO dto) {
         return authService.signup(dto);
     }
 }

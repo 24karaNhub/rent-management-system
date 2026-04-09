@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAllProperties, createProperty } from "../services/api";
-import { getPropertiesByLandlord } from"../services/api.js";
+import { getPropertiesByLandlord, getTenantsByLandlord } from "../services/api.js";
 import { Card } from "../components/ui/Card";
 import { Table } from "../components/ui/Table";
 import { Button } from "../components/ui/Button";
@@ -84,10 +84,28 @@ export default function Properties() {
   async function load() {
     setLoading(true);
     try {
-      const landlordId=localStorage.getItem("landlordId")
-      if(!landlordId){setError("Not logged In."); return;}
-      const data = await getPropertiesByLandlord(landlordId);
-      setProperties(Array.isArray(data) ? data : []);
+      const landlordId = localStorage.getItem("landlordId");
+      console.log("Loaded landlordId from localStorage:", landlordId);
+      if (!landlordId) { setError("Not logged In."); return; }
+
+      // ✅ Fix Bug 2 — fetch both in parallel
+      const [data, tenants] = await Promise.all([
+        getPropertiesByLandlord(landlordId),
+        getTenantsByLandlord(landlordId)
+      ]);
+
+      const props = Array.isArray(data) ? data : [];
+      const tens = Array.isArray(tenants) ? tenants : [];
+
+      // ✅ enrich each property with tenant count using propertyId
+      const enriched = props.map(p => ({
+        ...p,
+        occupiedUnits: tens.filter(t => t.propertyId === p.id).length,
+        totalUnits: 1,
+        monthlyRent: p.rent
+      }));
+
+      setProperties(enriched);
     } catch (e) {
       setError(e.message);
     } finally {
@@ -106,7 +124,8 @@ export default function Properties() {
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
           </div>
           <div>
-            <p className="font-semibold text-slate-900 dark:text-slate-100">{p.name || "Unnamed Property"}</p>
+            {/* ✅ Fix Bug 1 — use p.type instead of p.name */}
+            <p className="font-semibold text-slate-900 dark:text-slate-100">{p.type || "Unnamed Property"}</p>
             <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">{p.address || "No address provided"}</p>
           </div>
         </div>
@@ -125,8 +144,8 @@ export default function Properties() {
               <span className="font-bold text-indigo-600 dark:text-indigo-400">{pct}%</span>
             </div>
             <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden ring-1 ring-slate-200/50 dark:ring-slate-700/50 inset-shadow-sm">
-              <div 
-                className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]" 
+              <div
+                className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]"
                 style={{ width: `${pct}%` }}
               ></div>
             </div>

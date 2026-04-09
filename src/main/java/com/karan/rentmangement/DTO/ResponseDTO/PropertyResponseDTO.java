@@ -15,4 +15,5 @@ public class PropertyResponseDTO {
     private String address;
 
     private String landlordName; 
+    private int TennatCount;
 }

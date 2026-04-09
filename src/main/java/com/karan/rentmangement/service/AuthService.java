@@ -38,7 +38,7 @@ private LandlordResponseDTO toResponseDTO(Landlord landlord) {
     return dto;
 }
 
-public Landlord signup(SignupRequestDTO dto) {
+public LandlordResponseDTO signup(SignupRequestDTO dto) {
 
         // 🔥 check if user already exists
         landlordRepo.findByEmail(dto.getEmail())
@@ -52,7 +52,8 @@ public Landlord signup(SignupRequestDTO dto) {
         landlord.setPhone(dto.getPhone());
         landlord.setPassword(dto.getPassword()); // later we encrypt
 
-        return landlordRepo.save(landlord);
+        landlord = landlordRepo.save(landlord);
+        return toResponseDTO(landlord);
     }
 
     public Landlord signup(Landlord landlord) {

@@ -11,4 +11,5 @@ public class TenantResponseDTO {
     private long rent;
     private String landlordName;
     private String propertyAddress;
+    private int property_id;
 }

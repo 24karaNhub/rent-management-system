@@ -56,6 +56,7 @@ private PropertyResponseDTO toResponseDTO(Property property){
     if(property.getLandlord() != null){
         dto.setLandlordName(property.getLandlord().getName());
     }
+    dto.setTennatCount(tenantRepo.findByProperty(property).size());
 
     return dto;
 }
@@ -75,6 +76,7 @@ private TenantResponseDTO toTenantDTO(Tenant tenant){
 
     if (tenant.getProperty() != null) {
         dto.setPropertyAddress(tenant.getProperty().getAddress());
+        dto.setProperty_id(tenant.getProperty().getId());
     }
 
     return dto;

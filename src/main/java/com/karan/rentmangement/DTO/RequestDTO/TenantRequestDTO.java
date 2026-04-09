@@ -1,5 +1,7 @@
 package com.karan.rentmangement.DTO.RequestDTO;
 
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -22,8 +24,8 @@ public class TenantRequestDTO {
     private int id;
     private long rent;
     private String aadhar;
-    private String MoveInDate;
-    private String moveOutDate;
+    private LocalDate moveInDate;
+    private LocalDate moveOutDate;
     private int landlord_id;
     private int property_id;
 }
