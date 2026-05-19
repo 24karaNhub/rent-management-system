@@ -126,7 +126,7 @@ export default function Tenants() {
       render: (t) => (
         <div className="flex items-center gap-4 w-max">
           <div className="relative">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-400 to-teal-500 text-white flex items-center justify-center font-bold shadow-md shadow-emerald-500/30">
+            <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400 flex items-center justify-center font-bold">
               {(t.name || "U").charAt(0).toUpperCase()}
             </div>
             {(t.status || "").toUpperCase() === "ACTIVE" && (
@@ -177,9 +177,9 @@ export default function Tenants() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 bg-white/40 dark:bg-slate-800/40 p-6 rounded-3xl border border-slate-200/60 dark:border-slate-700/60 backdrop-blur-sm shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
         <div>
-          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-slate-100 tracking-tight">Tenants</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Tenants</h1>
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">{activeCount} active tenant{activeCount !== 1 ? "s" : ""} across your properties</p>
         </div>
         <Button variant="primary" onClick={() => setShowAdd(true)}>

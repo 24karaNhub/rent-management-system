@@ -89,13 +89,10 @@ export default function LandlordDetails() {
       </div>
 
       {/* Hero Profile Card */}
-      <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-700/80 rounded-3xl p-8 flex flex-col md:flex-row md:justify-between md:items-center gap-8 shadow-xl shadow-slate-200/20 dark:shadow-none relative overflow-hidden">
-        {/* Glow behind */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[80px] -z-10 mix-blend-multiply pointer-events-none translate-x-1/2 -translate-y-1/2"></div>
-        
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-8 flex flex-col md:flex-row md:justify-between md:items-center gap-8 shadow-sm">
         <div className="flex items-center gap-6">
-          <div className="w-20 h-20 rounded-[28px] bg-gradient-to-tr from-indigo-500 to-fuchsia-600 text-white flex items-center justify-center text-4xl font-bold flex-shrink-0 shadow-lg shadow-indigo-500/30">
-            <span className="drop-shadow-sm">{landlord.name?.charAt(0).toUpperCase()}</span>
+          <div className="w-16 h-16 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-400 flex items-center justify-center text-3xl font-bold">
+            <span>{landlord.name?.charAt(0).toUpperCase()}</span>
           </div>
           <div>
             <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-slate-100 tracking-tight mb-2">{landlord.name}</h1>
@@ -121,12 +118,12 @@ export default function LandlordDetails() {
       </div>
 
       <div className="flex gap-4">
-        <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-slate-200/60 dark:border-slate-700/60 rounded-3xl px-8 py-5 flex flex-col justify-center gap-1 shadow-sm flex-1">
-          <span className="text-4xl font-display font-bold text-indigo-600 dark:text-indigo-400">{properties.length}</span>
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-8 py-5 flex flex-col justify-center gap-1 shadow-sm flex-1">
+          <span className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{properties.length}</span>
           <span className="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mt-1">Properties Owned</span>
         </div>
-        <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-slate-200/60 dark:border-slate-700/60 rounded-3xl px-8 py-5 flex flex-col justify-center gap-1 shadow-sm flex-1">
-          <span className="text-4xl font-display font-bold text-teal-600 dark:text-teal-400">{tenants.length}</span>
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-8 py-5 flex flex-col justify-center gap-1 shadow-sm flex-1">
+          <span className="text-3xl font-bold text-teal-600 dark:text-teal-400">{tenants.length}</span>
           <span className="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mt-1">Active Tenants</span>
         </div>
       </div>
@@ -147,8 +144,8 @@ export default function LandlordDetails() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {properties.map(p => (
-                <div key={p.id} className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-700/80 rounded-3xl p-6 hover:shadow-xl hover:shadow-purple-500/10 dark:hover:shadow-purple-500/5 hover:-translate-y-1 transition-all duration-300 group">
-                  <h3 className="font-display font-bold text-slate-900 dark:text-slate-100 mb-1 text-xl group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">{p.name || p.address || 'Property'}</h3>
+                <div key={p.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 hover:shadow-md transition-all duration-200 group">
+                  <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-1 text-lg">{p.name || p.address || 'Property'}</h3>
                   {p.address && <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-4">{p.address}</p>}
                   
                   <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-700/50">
@@ -185,11 +182,11 @@ export default function LandlordDetails() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {tenants.map(t => (
-                <div key={t.id} className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-700/80 rounded-3xl p-6 flex flex-col items-center hover:shadow-xl hover:shadow-teal-500/10 dark:hover:shadow-teal-500/5 hover:-translate-y-1 transition-all duration-300 group">
-                  <div className="w-16 h-16 bg-gradient-to-tr from-emerald-400 to-teal-500 text-white flex justify-center items-center rounded-[20px] mb-4 text-2xl font-bold shadow-lg shadow-emerald-500/20 group-hover:scale-110 transition-transform duration-300">
-                    <span className="drop-shadow-sm">{t.name?.charAt(0).toUpperCase()}</span>
+                <div key={t.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 flex flex-col items-center hover:shadow-md transition-all duration-200 group">
+                  <div className="w-16 h-16 bg-teal-100 text-teal-700 flex justify-center items-center rounded-xl mb-4 text-2xl font-bold">
+                    <span>{t.name?.charAt(0).toUpperCase()}</span>
                   </div>
-                  <h3 className="font-display font-bold text-slate-900 dark:text-slate-100 text-xl tracking-tight mb-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">{t.name}</h3>
+                  <h3 className="font-bold text-slate-900 dark:text-slate-100 text-lg tracking-tight mb-2">{t.name}</h3>
                   <div className="w-full bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-700/50 flex flex-col gap-2">
                     <div className="flex items-center gap-2">
                         <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>

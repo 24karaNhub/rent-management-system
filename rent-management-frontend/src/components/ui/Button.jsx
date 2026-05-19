@@ -7,14 +7,14 @@ export function Button({
   loading = false, 
   ...props 
 }) {
-  const baseStyles = "relative inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 overflow-hidden shadow-sm";
+  const baseStyles = "relative inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
   
   const variants = {
-    primary: "bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white focus:ring-indigo-500 shadow-indigo-500/30 hover:shadow-md hover:shadow-indigo-500/40 hover:-translate-y-0.5",
-    secondary: "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100 focus:ring-slate-200 dark:focus:ring-slate-700 hover:border-slate-300 dark:hover:border-slate-600",
-    danger: "bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 text-white focus:ring-rose-500 shadow-rose-500/20 hover:shadow-md hover:shadow-rose-500/40 hover:-translate-y-0.5",
-    ghost: "bg-transparent text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-slate-800 focus:ring-indigo-100 dark:focus:ring-slate-700 hover:text-indigo-700 dark:hover:text-slate-200 shadow-none",
-    success: "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white focus:ring-emerald-500 shadow-emerald-500/30 hover:shadow-md hover:shadow-emerald-500/40 hover:-translate-y-0.5",
+    primary: "bg-indigo-600 hover:bg-indigo-700 text-white focus:ring-indigo-500",
+    secondary: "bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700",
+    danger: "bg-red-600 hover:bg-red-700 text-white focus:ring-red-500",
+    ghost: "bg-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800",
+    success: "bg-emerald-600 hover:bg-emerald-700 text-white focus:ring-emerald-500",
   };
 
   const sizes = {

@@ -27,19 +27,16 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative bg-transparent overflow-hidden px-4 py-12">
-      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-teal-500/10 blur-[120px] -z-10 rounded-full mix-blend-multiply pointer-events-none translate-x-1/3 -translate-y-1/3"></div>
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/10 blur-[120px] -z-10 rounded-full mix-blend-multiply pointer-events-none -translate-x-1/3 translate-y-1/3"></div>
-
-      <div className="w-full max-w-lg bg-white/60 backdrop-blur-xl rounded-3xl p-8 sm:p-10 border border-slate-200/50 shadow-2xl shadow-slate-200/20 animate-fade-in relative z-10">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 px-4 py-12">
+      <div className="w-full max-w-lg bg-white dark:bg-slate-800 rounded-xl p-8 sm:p-10 border border-slate-200 dark:border-slate-700 shadow-sm relative z-10">
         <div className="text-center mb-10">
-          <span className="text-indigo-600 font-bold uppercase tracking-widest text-xs mb-3 block">Join RentOS Platform</span>
-          <h1 className="text-3xl font-display font-bold text-slate-900 tracking-tight">Create an account</h1>
-          <p className="text-slate-500 font-medium mt-2">Start managing your properties effortlessly.</p>
+          <span className="text-indigo-600 font-bold uppercase tracking-wider text-xs mb-3 block">Join RentOS</span>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Create an account</h1>
+          <p className="text-slate-500 mt-2 text-sm">Start managing your properties effortlessly.</p>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-rose-50/80 border border-rose-200/80 rounded-2xl text-sm font-medium text-rose-600 text-center backdrop-blur-sm">
+          <div className="mb-6 p-4 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm text-center">
             {typeof error === "string" ? error : "Signup Failed."}
           </div>
         )}

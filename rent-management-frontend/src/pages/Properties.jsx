@@ -143,9 +143,9 @@ export default function Properties() {
               <span className="font-semibold text-slate-700 dark:text-slate-300">{occ} / {tot} Units</span>
               <span className="font-bold text-indigo-600 dark:text-indigo-400">{pct}%</span>
             </div>
-            <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden ring-1 ring-slate-200/50 dark:ring-slate-700/50 inset-shadow-sm">
+            <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700">
               <div
-                className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]"
+                className="h-full bg-indigo-600 rounded-full"
                 style={{ width: `${pct}%` }}
               ></div>
             </div>
@@ -162,9 +162,9 @@ export default function Properties() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 bg-white/40 dark:bg-slate-800/40 p-6 rounded-3xl border border-slate-200/60 dark:border-slate-700/60 backdrop-blur-sm shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
         <div>
-          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-slate-100 tracking-tight">Properties</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Properties</h1>
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Manage physical locations and track occupancy.</p>
         </div>
         <Button variant="primary" onClick={() => setShowAdd(true)}>

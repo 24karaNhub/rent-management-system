@@ -141,7 +141,7 @@ function LoginForm({ onSuccess }) {
   e.preventDefault();
   setError(""); setLoading(true);
   try {
-    const landlord = await signupClient(form);
+    const landlord = await loginClient(form);
     console.log("landlord object:", landlord); // 👈 check this
     
     // Clear old user data first

@@ -29,7 +29,7 @@ export default function Payments() {
       header: "Origination",
       render: (p) => (
         <div className="flex items-center gap-3 w-max">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-500 text-white flex items-center justify-center font-bold shadow-md shadow-cyan-500/30">
+          <div className="w-10 h-10 rounded-lg bg-cyan-100 text-cyan-700 dark:bg-cyan-900/50 dark:text-cyan-400 flex items-center justify-center font-bold">
             {(p.tenantName || "U").charAt(0).toUpperCase()}
           </div>
           <div>
@@ -75,16 +75,14 @@ export default function Payments() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 bg-white/40 dark:bg-slate-800/40 p-6 rounded-3xl border border-slate-200/60 dark:border-slate-700/60 backdrop-blur-sm shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
         <div>
-          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-slate-100 tracking-tight">Payments</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Payments</h1>
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Review all rent and asset transactions globally.</p>
         </div>
-        <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-[2px] rounded-2xl shadow-lg shadow-emerald-500/20">
-          <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur px-6 py-3 rounded-2xl">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest block mb-0.5">Total Collected</span>
-              <span className="text-xl font-display font-bold text-emerald-600 dark:text-emerald-400 block">₹{totalCollected.toLocaleString("en-IN")}</span>
-          </div>
+        <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-4 rounded-xl shadow-sm">
+          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest block mb-0.5">Total Collected</span>
+          <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400 block">₹{totalCollected.toLocaleString("en-IN")}</span>
         </div>
       </div>
 
