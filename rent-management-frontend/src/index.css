@@ -8,8 +8,8 @@ html, body, #root {
 
 /* Custom Scrollbar for a premium feel */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -17,21 +17,40 @@ html, body, #root {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 10px;
+  background: rgba(197, 168, 128, 0.2); /* Brass accent light opacity */
+  border-radius: 99px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: rgba(197, 168, 128, 0.4);
 }
 
 body {
-  background-color: #f8fafc;
-  color: #334155;
+  background-color: #FBF9F6; /* Plaster */
+  color: #121314; /* Ink */
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.dark body {
-  background-color: #0f172a;
-  color: #f8fafc;
+/* Fine architectural border styles */
+.fine-border {
+  border: 1px solid rgba(18, 19, 20, 0.08);
+}
+
+.fine-border-b {
+  border-bottom: 1px solid rgba(18, 19, 20, 0.08);
+}
+
+/* Custom dotted lines for table row style */
+.ledger-dotted-row {
+  border-bottom: 1.5px dotted rgba(18, 19, 20, 0.12);
+}
+
+/* Active navigation dot animation */
+.nav-dot-active {
+  animation: dotExpand 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes dotExpand {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }

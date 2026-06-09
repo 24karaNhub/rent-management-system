@@ -16,6 +16,9 @@ export const getTenantsOfProperty = (id) =>
   API.get(`/property/${id}/tenants`).then(r => r.data);
 export const getPaymentsOfProperty = (id) =>
   API.get(`/property/${id}/payments`).then(r => r.data);
+export const getRoomsOfProperty = (id) =>
+  API.get(`/property/${id}/rooms`).then(r => r.data);
+
 
 // TENANTS
 export const getAllTenants = () => API.get("/tenants").then(r => r.data);
@@ -25,6 +28,9 @@ export const getPaymentsOfTenant = (id) =>
 export const getTenantsByLandlord = (id) => API.get(`/tenants/landlord/${id}`).then(r => r.data);
 export const createTenant = (data) => API.post("/tenants", data).then(r => r.data);
 export const updateTenant = (id, data) => API.put(`/tenants/${id}`, data).then(r => r.data);
+export const updateTenantStatus = (id, status) => API.put(`/tenants/${id}/status`, status, {
+  headers: { "Content-Type": "text/plain" }
+}).then(r => r.data);
 export const deleteTenant = (id) => API.delete(`/tenants/${id}`).then(r => r.data);
 
 // PAYMENTS

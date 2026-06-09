@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
 import Dashboard from './pages/Dashboard';
 import Properties from './pages/Properties';
+import PropertyDetails from './pages/PropertyDetails';
 import Tenants from './pages/Tenants';
 import Payments from './pages/Payments';
 import LandlordDetails from './pages/LandlordDetails';
@@ -19,12 +20,13 @@ function ProtectedApp() {
   return (
     <Layout>
       <Routes>
-        <Route path="/"              element={<Dashboard />} />
-        <Route path="/properties"    element={<Properties />} />
-        <Route path="/tenants"       element={<Tenants />} />
-        <Route path="/payments"      element={<Payments />} />
-        <Route path="/landlords"     element={<Landlords />} />
-        <Route path="/landlords/:id" element={<LandlordDetails />} />
+        <Route path="/"                  element={<Dashboard />} />
+        <Route path="/properties"         element={<Properties />} />
+        <Route path="/properties/:id"     element={<PropertyDetails />} />
+        <Route path="/tenants"            element={<Tenants />} />
+        <Route path="/payments"           element={<Payments />} />
+        <Route path="/landlords"          element={<Landlords />} />
+        <Route path="/landlords/:id"      element={<LandlordDetails />} />
       </Routes>
     </Layout>
   );

@@ -7,9 +7,21 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      colors: {
+        brand: {
+          plaster: '#FBF9F6',
+          alabaster: '#FFFFFF',
+          ink: '#121314',
+          chalk: '#686E74',
+          brass: '#C5A880',
+          forest: '#1C3A27',
+          rust: '#8E3E2F',
+        }
+      },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
-        display: ['Outfit', 'sans-serif'],
+        display: ['"Playfair Display"', 'serif'],
+        mono: ['"Instrument Mono"', 'monospace'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',

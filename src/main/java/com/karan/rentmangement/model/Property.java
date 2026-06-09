@@ -14,6 +14,9 @@ public class Property {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    private String name;
+    private int totalRooms;
+
     @NotBlank(message = "Address should not be blank")
     private String Address;
     @NotNull(message = "Rent cannot be null")
@@ -27,7 +30,12 @@ public class Property {
     @JoinColumn(name = "landlord_id")
     private Landlord landlord;
 
-    public Property(String address, long rent, String type, String city, Landlord landlord) {
+    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<Room> rooms = new java.util.ArrayList<>();
+
+    public Property(String name, int totalRooms, String address, long rent, String type, String city, Landlord landlord) {
+        this.name = name;
+        this.totalRooms = totalRooms;
         this.Address = address;
         this.rent = rent;
         this.type = type;
@@ -82,6 +90,30 @@ public class Property {
 
     public void setLandlord(Landlord landlord) {
         this.landlord = landlord;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getTotalRooms() {
+        return totalRooms;
+    }
+
+    public void setTotalRooms(int totalRooms) {
+        this.totalRooms = totalRooms;
+    }
+
+    public java.util.List<Room> getRooms() {
+        return rooms;
+    }
+
+    public void setRooms(java.util.List<Room> rooms) {
+        this.rooms = rooms;
     }
 }
 

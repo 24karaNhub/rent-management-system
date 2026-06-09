@@ -34,11 +34,12 @@ private String phone;
 @NotNull(message = "Rent cannot be null")
 @Positive(message = "Rent must be greater than 0")
 private Long rent;
-
 @Column(name = "move_in_date")
 private LocalDate moveInDate;
 private LocalDate moveOutDate;
 private String aadhaar;
+private String status = "ACTIVE";
+
     public Tenant(String name, String email, String phone , Long rent, LocalDate moveInDate, LocalDate moveOutDate, String aadhaar) {
         this.name=name;
         this.email=email;
@@ -55,6 +56,11 @@ private String aadhaar;
     @ManyToOne
     @JoinColumn(name = "property_id")
     private Property property;
+
+    @OneToOne
+    @JoinColumn(name = "room_id", nullable = true)
+    private Room room;
+
     public Tenant() {
 
     }
@@ -130,5 +136,21 @@ private String aadhaar;
     
     public void setMoveOutDate(LocalDate moveOutDate) {
         this.moveOutDate = moveOutDate;
+    }
+
+    public String getStatus() {
+        return this.status == null ? "ACTIVE" : this.status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
     }
 }

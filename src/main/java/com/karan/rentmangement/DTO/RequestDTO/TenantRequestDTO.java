@@ -28,4 +28,6 @@ public class TenantRequestDTO {
     private LocalDate moveOutDate;
     private int landlord_id;
     private int property_id;
+    private String status;
+    private Integer roomId;
 }
