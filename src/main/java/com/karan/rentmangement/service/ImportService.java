@@ -34,12 +34,47 @@ public class ImportService {
     private rentPaymentRepo rentpaymentRepo;
 
     public String importFromExcel(MultipartFile file, Integer landlordId) {
+        // Phase 3: Upload Security Audit
+        // 1. File size check (limit to 10MB)
+        if (file.getSize() > 10 * 1024 * 1024) {
+            throw new IllegalArgumentException("File size exceeds the maximum limit of 10MB.");
+        }
+
+        // 2. File extension check
+        String filename = file.getOriginalFilename();
+        if (filename == null || (!filename.toLowerCase().endsWith(".xlsx") && !filename.toLowerCase().endsWith(".xls"))) {
+            throw new IllegalArgumentException("Invalid file format. Only .xlsx and .xls are supported.");
+        }
+
         Landlord landlord = landlordRepo.findById(landlordId)
-                .orElseThrow(() -> new RuntimeException("Landlord not found with id: " + landlordId));
+                .orElseThrow(() -> new IllegalArgumentException("Landlord not found with id: " + landlordId));
+
+        // Phase 7: Performance Optimization (In-memory lookup caching)
+        java.util.List<Property> existingProps = propertyRepo.findByLandlordId(landlordId);
+        java.util.Map<String, Property> propertyMap = new java.util.HashMap<>();
+        for (Property p : existingProps) {
+            if (p.getAddress() != null) {
+                propertyMap.put(p.getAddress().trim().toLowerCase(), p);
+            }
+        }
+
+        java.util.List<Tenant> existingTenants = tenantRepo.findByLandlordId(landlordId);
+        java.util.Map<String, Tenant> tenantMap = new java.util.HashMap<>();
+        for (Tenant t : existingTenants) {
+            if (t.getPhone() != null) {
+                tenantMap.put(t.getPhone().trim(), t);
+            }
+        }
 
         int imported = 0;
-        try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
+        try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
+            if (workbook.getNumberOfSheets() == 0) {
+                throw new IllegalArgumentException("The Excel file contains no sheets.");
+            }
             Sheet sheet = workbook.getSheetAt(0);
+            if (sheet == null || sheet.getPhysicalNumberOfRows() == 0) {
+                throw new IllegalArgumentException("The sheet is empty.");
+            }
 
             // Column mappings
             int tenantNameCol = -1;
@@ -53,7 +88,7 @@ public class ImportService {
             int headerRowIdx = -1;
 
             // Scan first 10 rows to dynamically discover headers
-            int maxScanRows = Math.min(10, sheet.getPhysicalNumberOfRows());
+            int maxScanRows = Math.min(10, sheet.getLastRowNum());
             for (int i = 0; i <= maxScanRows; i++) {
                 Row row = sheet.getRow(i);
                 if (row == null) continue;
@@ -118,6 +153,11 @@ public class ImportService {
                 rentCol = 3;
                 monthCol = 4;
                 statusCol = 5;
+            } else {
+                // Phase 5: Data Validation
+                if (tenantNameCol == -1 || addressCol == -1 || rentCol == -1) {
+                    throw new IllegalArgumentException("Required columns (Tenant Name, Property/Address, Rent Amount) could not be mapped from the headers.");
+                }
             }
 
             for (Row row : sheet) {
@@ -130,16 +170,21 @@ public class ImportService {
                     continue; // Skip empty rows or spacer rows
                 }
 
+                // Phase 4: Formula Injection Sanitization
+                tenantName = sanitizeFormula(tenantName);
+
                 // Read other columns safely
                 String phone = (phoneCol != -1) ? cleanPhone(getCellValueAsString(row, phoneCol)) : "9999999999";
+                
                 String address = (addressCol != -1) ? getCellValueAsString(row, addressCol) : "";
                 if (address == null || address.trim().isEmpty()) {
                     address = "Unit " + row.getRowNum(); // Default address fallback
                 }
+                address = sanitizeFormula(address);
 
                 Long rent = (rentCol != -1) ? getCellValueAsLong(row, rentCol) : 1000L;
                 if (rent <= 0) {
-                    rent = 1000L; // Fallback rent to satisfy positive constraints
+                    throw new IllegalArgumentException("Rent amount in row " + (row.getRowNum() + 1) + " must be a positive number.");
                 }
 
                 String monthStr = (monthCol != -1) ? getCellValueAsString(row, monthCol) : "";
@@ -151,6 +196,7 @@ public class ImportService {
                 } else {
                     status = status.toUpperCase();
                 }
+                status = sanitizeFormula(status);
 
                 // Parse custom date if provided, otherwise default to today
                 LocalDate paymentDate = LocalDate.now();
@@ -159,31 +205,46 @@ public class ImportService {
                     paymentDate = parseDate(dateCell);
                 }
 
-                // Create Property (satisfying address, rent, type, city, landlord constraints)
-                Property property = new Property();
-                property.setAddress(address);
-                property.setRent(rent);
-                property.setType("Apartment"); // satisfies @NotBlank type
-                property.setCity("Noida");      // satisfies @NotBlank city
-                property.setLandlord(landlord);
-                propertyRepo.save(property);
-
-                // Create Tenant (satisfying name, email, phone, rent, landlord, property constraints)
-                Tenant tenant = new Tenant();
-                tenant.setName(tenantName);
-                
-                // Generate a valid, unique gmail address to satisfy @Pattern constraint: ^[a-zA-Z0-9._%+-]+@(gmail\.com|googlemail\.com)$
-                String emailSafeName = tenantName.toLowerCase().replaceAll("[^a-z0-9]", "");
-                if (emailSafeName.isEmpty()) {
-                    emailSafeName = "tenant" + row.getRowNum();
+                // Phase 2: Duplicate Prevention & Lookup
+                String normAddress = address.trim().toLowerCase();
+                Property property = propertyMap.get(normAddress);
+                if (property == null) {
+                    property = new Property();
+                    property.setAddress(address);
+                    property.setRent(rent);
+                    property.setType("Apartment"); // satisfies @NotBlank type
+                    property.setCity("Noida");      // satisfies @NotBlank city
+                    property.setLandlord(landlord);
+                    propertyRepo.save(property);
+                    propertyMap.put(normAddress, property);
                 }
-                tenant.setEmail(emailSafeName + "." + System.currentTimeMillis() + "." + imported + "@gmail.com");
-                tenant.setPhone(phone);
-                tenant.setRent(rent);
-                tenant.setMoveInDate(LocalDate.now());
-                tenant.setProperty(property);
-                tenant.setLandlord(landlord);
-                tenantRepo.save(tenant);
+
+                String normPhone = phone.trim();
+                Tenant tenant = tenantMap.get(normPhone);
+                if (tenant == null) {
+                    tenant = new Tenant();
+                    tenant.setName(tenantName);
+                    
+                    // Generate a valid, unique gmail address to satisfy @Pattern constraint
+                    String emailSafeName = tenantName.toLowerCase().replaceAll("[^a-z0-9]", "");
+                    if (emailSafeName.isEmpty()) {
+                        emailSafeName = "tenant" + row.getRowNum();
+                    }
+                    tenant.setEmail(emailSafeName + "." + System.currentTimeMillis() + "." + imported + "@gmail.com");
+                    tenant.setPhone(phone);
+                    tenant.setRent(rent);
+                    tenant.setMoveInDate(LocalDate.now());
+                    tenant.setProperty(property);
+                    tenant.setLandlord(landlord);
+                    tenantRepo.save(tenant);
+                    tenantMap.put(normPhone, tenant);
+                } else {
+                    // Update connection to property if changed
+                    if (tenant.getProperty() == null || tenant.getProperty().getId() != property.getId()) {
+                        tenant.setProperty(property);
+                        tenantRepo.save(tenant);
+                    }
+                }
 
                 // Create Payment
                 rentPayment payment = new rentPayment();
@@ -200,25 +261,26 @@ public class ImportService {
             }
 
             if (imported == 0) {
-                StringBuilder sb = new StringBuilder("No records imported. ");
-                sb.append("Sheet has ").append(sheet.getPhysicalNumberOfRows()).append(" physical rows. ");
-                int loggedRows = 0;
-                for (Row r : sheet) {
-                    if (loggedRows++ >= 3) break;
-                    sb.append("[Row ").append(r.getRowNum()).append(" columns: ");
-                    short lastCell = r.getLastCellNum();
-                    for (int c = 0; c < Math.max(6, lastCell); c++) {
-                        sb.append(c).append("='").append(getCellValueAsString(r, c)).append("'; ");
-                    }
-                    sb.append("] ");
-                }
-                throw new RuntimeException(sb.toString());
+                throw new IllegalArgumentException("No records were imported from the spreadsheet.");
             }
 
             return imported + " records imported successfully!";
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to import excel file: " + e.getMessage());
+        } catch (Exception e) {
+            // Phase 3: Malformed/Invalid file handling
+            if (e instanceof IllegalArgumentException) {
+                throw (IllegalArgumentException) e;
+            }
+            throw new RuntimeException("Failed to process Excel file: " + e.getMessage(), e);
         }
+    }
+
+    private String sanitizeFormula(String value) {
+        if (value == null) return "";
+        String trimmed = value.trim();
+        if (trimmed.startsWith("=") || trimmed.startsWith("+") || trimmed.startsWith("-") || trimmed.startsWith("@")) {
+            return "'" + value;
+        }
+        return value;
     }
 
     private String getCellValueAsString(Row row, int cellIndex) {
