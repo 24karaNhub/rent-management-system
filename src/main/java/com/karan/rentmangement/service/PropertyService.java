@@ -144,6 +144,13 @@ public class PropertyService {
         if (payment.getLandlord() != null) {
             dto.setLandlordName(payment.getLandlord().getName());
         }
+        if (payment.getProperty() != null) {
+            dto.setPropertyId(payment.getProperty().getId());
+        }
+        if (payment.getTenant() != null) {
+            dto.setTenantId(payment.getTenant().getid());
+            dto.setTenantName(payment.getTenant().getName());
+        }
         return dto;
     }
 

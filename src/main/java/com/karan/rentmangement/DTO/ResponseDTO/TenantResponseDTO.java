@@ -1,6 +1,7 @@
 package com.karan.rentmangement.DTO.ResponseDTO;
 
 import lombok.Data;
+import java.time.LocalDate;
 
 @Data
 public class TenantResponseDTO {
@@ -15,5 +16,6 @@ public class TenantResponseDTO {
     private String status;
     private Integer roomId;
     private String roomNumber;
+    private LocalDate dueDate;
 }
 

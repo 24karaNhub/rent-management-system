@@ -24,4 +24,14 @@ public class GlobalExceptionHandler {
 
         return errors;
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleRuntimeExceptions(
+            RuntimeException ex) {
+
+        Map<String, String> error = new HashMap<>();
+        error.put("message", ex.getMessage());
+        return error;
+    }
 }

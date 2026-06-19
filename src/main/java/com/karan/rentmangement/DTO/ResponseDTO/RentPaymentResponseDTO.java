@@ -16,6 +16,6 @@ public class RentPaymentResponseDTO {
     private String landlordName;
     private String tenantName;
     private String propertyName;
-
-    
+    private Integer propertyId;
+    private Integer tenantId;
 }

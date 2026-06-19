@@ -48,4 +48,22 @@ public class rentPaymentController {
     public ResponseEntity<RentPaymentResponseDTO> getbyId(@PathVariable int id){
         return ResponseEntity.ok(rentpaymentService.getbyid(id));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<RentPaymentResponseDTO> updatePayment(
+            @PathVariable int id,
+            @RequestBody @Valid RentPaymentRequestDTO dto) {
+        return ResponseEntity.ok(rentpaymentService.updateRentPayment(id, dto));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<RentPaymentResponseDTO> updatePaymentStatus(
+            @PathVariable int id,
+            @RequestBody java.util.Map<String, String> body) {
+        String status = body.get("status");
+        if (status == null) {
+            throw new IllegalArgumentException("Status is required");
+        }
+        return ResponseEntity.ok(rentpaymentService.updatePaymentStatus(id, status));
+    }
 }

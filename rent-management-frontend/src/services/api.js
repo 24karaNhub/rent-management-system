@@ -42,6 +42,8 @@ export const createPayment = (data) => API.post("/rent-payments", data).then(r =
 export const updatePayment = (id, data) => API.put(`/rent-payments/${id}`, data).then(r => r.data);
 export const getPaymentById = (id) =>
   API.get(`/rent-payments/${id}`).then(r => r.data);
+export const updatePaymentStatus = (id, status) =>
+  API.patch(`/rent-payments/${id}/status`, { status }).then(r => r.data);
 
 // LANDLORDS
 export const getAllLandlords = () => API.get("/landlord").then(r => r.data);

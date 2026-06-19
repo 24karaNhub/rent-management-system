@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllProperties, createProperty, deleteProperty } from "../services/api";
+import { getAllProperties, createProperty, deleteProperty, updateProperty } from "../services/api";
 import { getPropertiesByLandlord } from "../services/api.js";
 import { Card } from "../components/ui/Card";
 import { Table } from "../components/ui/Table";
@@ -291,14 +291,190 @@ function AddPropertyModal({ isOpen, onClose, onSaved }) {
   );
 }
 
+function EditPropertyModal({ isOpen, onClose, property, onSaved }) {
+  const [form, setForm] = useState({
+    name: "", type: "Apartment", rent: "", city: "", address: "", totalRooms: ""
+  });
+  const [saving, setSaving] = useState(false);
+  const [validationError, setValidationError] = useState(null);
+
+  // Autocomplete suggestions
+  const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && property) {
+      setForm({
+        name: property.name || "",
+        type: property.type || "Apartment",
+        rent: property.rent || "",
+        city: property.city || "",
+        address: property.address || "",
+        totalRooms: property.totalRooms || ""
+      });
+      setQuery(property.address || "");
+      setValidationError(null);
+    }
+  }, [isOpen, property]);
+
+  useEffect(() => {
+    if (!query || query.length < 3 || query === property?.address) { setSuggestions([]); return; }
+    const t = setTimeout(async () => {
+      setLoadingSuggestions(true);
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5`);
+        if (res.ok) setSuggestions(await res.json());
+      } catch (e) { console.error(e); }
+      finally { setLoadingSuggestions(false); }
+    }, 500);
+    return () => clearTimeout(t);
+  }, [query, property]);
+
+  const handleSelectLocation = (item) => {
+    const addr = item.address || {};
+    const city = addr.city || addr.town || addr.village || addr.suburb || addr.county || "Unknown City";
+    setForm(f => ({ ...f, city, address: item.display_name }));
+    setQuery(item.display_name);
+    setShowDropdown(false);
+  };
+
+  async function handleSave() {
+    if (!form.name.trim()) { setValidationError("Property Name is required."); return; }
+    if (!form.address.trim()) { setValidationError("Property Address is required."); return; }
+    if (form.rent === "" || parseFloat(form.rent) < 0) { setValidationError("Rent amount must be greater than zero"); return; }
+
+    setSaving(true);
+    setValidationError(null);
+    try {
+      const landlordId = localStorage.getItem("landlordId") 
+        || JSON.parse(localStorage.getItem("user") || "{}").id;
+
+      await updateProperty(property.id, {
+        name: form.name,
+        type: form.type,
+        rent: parseFloat(form.rent) || 0,
+        city: form.city,
+        address: form.address,
+        totalRooms: parseInt(form.totalRooms) || 1,
+        landlord_id: parseInt(landlordId)
+      });
+      onSaved("Property updated successfully");
+      onClose();
+    } catch (e) {
+      let msg = "Could not save: " + e.message;
+      if (e.response?.data) {
+        const data = e.response.data;
+        if (typeof data === "string") msg = data;
+        else if (data.message) msg = data.message;
+        else if (typeof data === "object") {
+          const vals = Object.values(data);
+          if (vals.length > 0) msg = vals.join(", ");
+        }
+      }
+      setValidationError(msg);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const inputClass = "w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400";
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="Edit Property">
+      <div className="space-y-5" onClick={(e) => e.stopPropagation()}>
+        {validationError && (
+          <div className="p-4 bg-brand-rust/5 border border-brand-rust/15 text-brand-rust rounded-xl text-xs font-mono">
+            {validationError}
+          </div>
+        )}
+
+        <div>
+          <label className="block text-xs font-mono uppercase tracking-widest text-brand-chalk mb-1.5">Property Name</label>
+          <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Sunrise Residency, Block A" className={inputClass} />
+        </div>
+
+        <div>
+          <label className="block text-xs font-mono uppercase tracking-widest text-brand-chalk mb-1.5">Property Type</label>
+          <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))} className={inputClass}>
+            {PROPERTY_TYPES.map(t => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-xs font-mono uppercase tracking-widest text-brand-chalk mb-1.5">Base Rent (₹)</label>
+          <input type="number" value={form.rent} onChange={e => setForm(f => ({ ...f, rent: e.target.value }))} placeholder="e.g. 12000" className={inputClass} />
+        </div>
+
+        <div>
+          <label className="block text-xs font-mono uppercase tracking-widest text-brand-chalk mb-1.5">Total Rooms</label>
+          <input type="number" value={form.totalRooms} onChange={e => setForm(f => ({ ...f, totalRooms: e.target.value }))} placeholder="e.g. 10" className={inputClass} />
+        </div>
+
+        <div className="relative">
+          <label className="block text-xs font-mono uppercase tracking-widest text-brand-chalk mb-1.5">Property Location</label>
+          <div className="relative flex items-center">
+            <span className="absolute left-4 text-slate-400">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </span>
+            <input type="text" placeholder="Search address, landmark, locality..." value={query}
+              onChange={e => { setQuery(e.target.value); setShowDropdown(true); }}
+              onFocus={() => setShowDropdown(true)}
+              className={`${inputClass} pl-11`} />
+          </div>
+          {showDropdown && (suggestions.length > 0 || loadingSuggestions) && (
+            <div className="absolute z-50 w-full mt-1 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xl overflow-hidden divide-y divide-slate-100 dark:divide-slate-700">
+              {loadingSuggestions ? (
+                <div className="p-3.5 text-xs text-slate-400 font-mono animate-pulse">Searching locations...</div>
+              ) : suggestions.map((item, i) => {
+                const parts = item.display_name.split(",");
+                return (
+                  <div key={i} onClick={() => handleSelectLocation(item)} className="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer flex items-start gap-3">
+                    <svg className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    </svg>
+                    <div>
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{parts[0]}</p>
+                      <p className="text-xs text-slate-400">{parts.slice(1).join(",").trim()}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
+          <Button variant="secondary" onClick={onClose}>Cancel</Button>
+          <Button variant="primary" loading={saving} onClick={handleSave}>Save Changes</Button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
 export default function Properties() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAdd, setShowAdd] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [successToast, setSuccessToast] = useState(null);
   const navigate = useNavigate();
 
-  async function load() {
+  const showToast = (msg) => {
+    setSuccessToast(msg);
+    setTimeout(() => setSuccessToast(null), 3000);
+  };
+
+  async function load(successMsg = null) {
     setLoading(true);
     try {
       const landlordId = localStorage.getItem("landlordId");
@@ -307,6 +483,9 @@ export default function Properties() {
       const data = await getPropertiesByLandlord(landlordId);
       const props = Array.isArray(data) ? data : [];
       setProperties(props);
+      if (successMsg && typeof successMsg === "string") {
+        showToast(successMsg);
+      }
     } catch (e) {
       setError(e.message);
     } finally {
@@ -363,17 +542,33 @@ export default function Properties() {
     {
       header: "",
       render: (p) => (
-        <button
-          onClick={() => navigate(`/properties/${p.id}`)}
-          className="text-xs font-mono uppercase tracking-widest text-brand-brass hover:text-brand-ink transition-colors px-3 py-1.5 rounded-lg border border-brand-brass/20 hover:border-brand-brass/50">
-          View →
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => navigate(`/properties/${p.id}`)}
+            className="text-xs font-mono uppercase tracking-widest text-brand-brass hover:text-brand-ink transition-colors px-2.5 py-1.5 rounded-lg border border-brand-brass/20 hover:border-brand-brass/50">
+            View
+          </button>
+          <button
+            onClick={() => {
+              setSelectedProperty(p);
+              setShowEdit(true);
+            }}
+            className="text-xs font-mono uppercase tracking-widest text-slate-500 hover:text-brand-ink transition-colors px-2.5 py-1.5 rounded-lg border border-slate-200 hover:border-slate-400">
+            Edit
+          </button>
+        </div>
       )
     }
   ];
 
   return (
     <div className="space-y-8 animate-fade-in">
+      {successToast && (
+        <div className="fixed top-24 right-8 bg-brand-forest text-brand-plaster font-semibold text-sm px-6 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 z-50 animate-bounce">
+          <span>✅</span>
+          <span>{successToast}</span>
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 pb-6 border-b border-brand-ink/10">
         <div>
           <h1 className="text-3xl font-display font-bold text-brand-ink tracking-tight">Properties</h1>
@@ -395,7 +590,8 @@ export default function Properties() {
         </Card>
       )}
 
-      <AddPropertyModal isOpen={showAdd} onClose={() => setShowAdd(false)} onSaved={load} />
+      <AddPropertyModal isOpen={showAdd} onClose={() => setShowAdd(false)} onSaved={(msg) => load(msg || "Property added successfully")} />
+      <EditPropertyModal isOpen={showEdit} onClose={() => setShowEdit(false)} property={selectedProperty} onSaved={load} />
     </div>
   );
 }
