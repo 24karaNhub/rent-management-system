@@ -90,9 +90,14 @@ public class PropertyController {
     // ✅ GET PAYMENTS OF PROPERTY
     @GetMapping("/{id}/payments")
     public ResponseEntity<List<RentPaymentResponseDTO>> getPaymentsOfProperty(
-            @PathVariable int id){
+            @PathVariable int id) {
+        return ResponseEntity.ok(propertyService.getPaymentsOfProperty(id));
+    }
 
-        return ResponseEntity
-                .ok(propertyService.getPaymentsOfProperty(id));
+    // ✅ GET ROOMS OF PROPERTY
+    @GetMapping("/{id}/rooms")
+    public ResponseEntity<List<com.karan.rentmangement.DTO.ResponseDTO.RoomResponseDTO>> getRoomsOfProperty(
+            @PathVariable int id) {
+        return ResponseEntity.ok(propertyService.getRoomsOfProperty(id));
     }
 }

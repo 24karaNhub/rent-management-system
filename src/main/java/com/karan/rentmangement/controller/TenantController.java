@@ -49,6 +49,11 @@ public class TenantController {
         return 
         ResponseEntity.ok(tenantService.updateTenant(id,dto));
     }
+    @PutMapping("/{id}/status")
+    public ResponseEntity<TenantResponseDTO> updateStatus(@PathVariable int id, @RequestBody String status) {
+        String cleanedStatus = status.replace("\"", "").trim();
+        return ResponseEntity.ok(tenantService.updateStatus(id, cleanedStatus));
+    }
     @GetMapping("/landlord/{landlordId}")
     public ResponseEntity<List<TenantResponseDTO>> getTenantsByLandlord(@PathVariable int landlordId) {
         return ResponseEntity.ok(tenantService.getTenantsByLandlord(landlordId));

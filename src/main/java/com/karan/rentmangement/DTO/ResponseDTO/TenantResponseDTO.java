@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class TenantResponseDTO {
-    private int  id;
+    private int id;
     private String name;
     private String email;
     private String phone;
@@ -12,4 +12,8 @@ public class TenantResponseDTO {
     private String landlordName;
     private String propertyAddress;
     private int property_id;
+    private String status;
+    private Integer roomId;
+    private String roomNumber;
 }
+

@@ -7,14 +7,14 @@ export function Button({
   loading = false, 
   ...props 
 }) {
-  const baseStyles = "relative inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
+  const baseStyles = "relative inline-flex items-center justify-center font-medium rounded-xl transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-brand-brass/40 active:scale-[0.98]";
   
   const variants = {
-    primary: "bg-indigo-600 hover:bg-indigo-700 text-white focus:ring-indigo-500",
-    secondary: "bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700",
-    danger: "bg-red-600 hover:bg-red-700 text-white focus:ring-red-500",
-    ghost: "bg-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800",
-    success: "bg-emerald-600 hover:bg-emerald-700 text-white focus:ring-emerald-500",
+    primary: "bg-brand-ink text-brand-plaster border border-brand-ink hover:opacity-95",
+    secondary: "bg-brand-alabaster text-brand-ink border border-brand-ink/15 hover:bg-brand-plaster",
+    danger: "bg-brand-rust/10 text-brand-rust border border-brand-rust/15 hover:bg-brand-rust/20",
+    ghost: "bg-transparent text-brand-chalk hover:text-brand-ink hover:bg-brand-plaster",
+    success: "bg-brand-forest/10 text-brand-forest border border-brand-forest/15 hover:bg-brand-forest/20",
   };
 
   const sizes = {

@@ -18,6 +18,7 @@ export default function Signup() {
     try {
       const landlord = await signupClient(form);
       localStorage.setItem('user', JSON.stringify(landlord));
+      localStorage.setItem('landlordId', landlord.id);
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || err.response?.data || 'Signup failed. Please try again.');
