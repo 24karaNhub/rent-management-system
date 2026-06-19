@@ -86,6 +86,7 @@ public class rentPaymentService {
     // }
     private RentPaymentResponseDTO tResponseDTO(rentPayment rentPayment){
         RentPaymentResponseDTO dto = new RentPaymentResponseDTO();
+        dto.setId(rentPayment.getId());
         dto.setAmount(rentPayment.getRent());
         if (rentPayment.getDate() != null) {
             dto.setDate(rentPayment.getDate().toString());
@@ -96,16 +97,16 @@ public class rentPaymentService {
         dto.setStatus(rentPayment.getStatus());
         if (rentPayment.getLandlord() != null) {
             dto.setLandlordName(rentPayment.getLandlord().getName());
-            
-            
         }
         if (rentPayment.getTenant() != null) {
             dto.setTenantName(rentPayment.getTenant().getName());
+            dto.setTenantId(rentPayment.getTenant().getid());
         }
 
         // 🔥 THIS ALSO
         if (rentPayment.getProperty() != null) {
             dto.setPropertyName(rentPayment.getProperty().getAddress());
+            dto.setPropertyId(rentPayment.getProperty().getId());
         }
 
         return dto;
@@ -141,4 +142,46 @@ public List<RentPaymentResponseDTO> getAllPaymentByLandlord(int id){
             .map(this::tResponseDTO)
             .toList();
 }
+
+    public RentPaymentResponseDTO updateRentPayment(int id, RentPaymentRequestDTO dto) {
+        rentPayment existing = rentpaymentRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
+
+        existing.setRent(dto.getRent());
+        existing.setDate(LocalDate.parse(dto.getDate()));
+        existing.setMonth(Month.valueOf(dto.getMonth().toUpperCase()));
+        existing.setStatus(dto.getStatus());
+
+        if (existing.getLandlord().getId() != dto.getLandlordId()) {
+            Landlord landlord = landlordRepo.findById(dto.getLandlordId())
+                    .orElseThrow(() -> new RuntimeException("Landlord not found"));
+            existing.setLandlord(landlord);
+        }
+        if (existing.getProperty().getId() != dto.getPropertyId()) {
+            Property property = propertyRepo.findById(dto.getPropertyId())
+                    .orElseThrow(() -> new RuntimeException("Property not found"));
+            existing.setProperty(property);
+        }
+        if (existing.getTenant().getid() != dto.getTenantId()) {
+            Tenant tenant = tenantRepo.findById(dto.getTenantId())
+                    .orElseThrow(() -> new RuntimeException("Tenant not found"));
+            existing.setTenant(tenant);
+        }
+
+        rentPayment saved = rentpaymentRepo.save(existing);
+        return tResponseDTO(saved);
+    }
+
+    public RentPaymentResponseDTO updatePaymentStatus(int id, String status) {
+        rentPayment existing = rentpaymentRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
+
+        existing.setStatus(status.toUpperCase());
+        if ("PAID".equalsIgnoreCase(status) && existing.getDate() == null) {
+            existing.setDate(LocalDate.now());
+        }
+
+        rentPayment saved = rentpaymentRepo.save(existing);
+        return tResponseDTO(saved);
+    }
 }

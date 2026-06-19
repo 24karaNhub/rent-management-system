@@ -1,19 +1,27 @@
 import { useEffect, useState } from "react";
-import {getAllTenants, createTenant, getTenantsByLandlord, getPropertiesByLandlord, getRoomsOfProperty, updateTenantStatus} from "../services/api";
+import {getAllTenants, createTenant, getTenantsByLandlord, getPropertiesByLandlord, getRoomsOfProperty, updateTenantStatus, updateTenant} from "../services/api";
 import { Card } from "../components/ui/Card";
 import { Table } from "../components/ui/Table";
 import { Button } from "../components/ui/Button";
 import { Modal } from "../components/ui/Modal";
+import TenantProfileModal from "./TenantProfile";
 
 function fmt(n) {
   return "₹" + Number(n || 0).toLocaleString("en-IN");
+}
+
+function formatDueDate(dateStr) {
+  if (!dateStr) return "—";
+  const [year, month, day] = dateStr.split("-");
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return `${day} ${months[parseInt(month) - 1]} ${year}`;
 }
 
 function AddTenantModal({ isOpen, onClose, onSaved }) {
   const [form, setForm] = useState({
     name: "", phone: "", email: "",
     rentAmount: "", aadharNumber: "",
-    moveInDate: "", property_id: "", roomId: ""
+    moveInDate: "", dueDate: "", property_id: "", roomId: ""
   });
   const [properties, setProperties] = useState([]);
   const [rooms, setRooms] = useState([]);
@@ -26,7 +34,7 @@ function AddTenantModal({ isOpen, onClose, onSaved }) {
       setForm({
         name: "", phone: "", email: "",
         rentAmount: "", aadharNumber: "",
-        moveInDate: "", property_id: "", roomId: ""
+        moveInDate: "", dueDate: "", property_id: "", roomId: ""
       });
       setRooms([]);
       setValidationError(null);
@@ -78,6 +86,10 @@ function AddTenantModal({ isOpen, onClose, onSaved }) {
       setValidationError("Name and phone are required.");
       return;
     }
+    if (!form.dueDate) {
+      setValidationError("Rent due date is required.");
+      return;
+    }
     if (!form.property_id) {
       setValidationError("Please select a property.");
       return;
@@ -93,6 +105,7 @@ function AddTenantModal({ isOpen, onClose, onSaved }) {
         rent: parseFloat(form.rentAmount) || 0,
         aadhar: form.aadharNumber,
         moveInDate: form.moveInDate || null,
+        dueDate: form.dueDate || null,
         moveOutDate: null,
         landlord_id: parseInt(landlordId),
         property_id: parseInt(form.property_id),
@@ -101,7 +114,7 @@ function AddTenantModal({ isOpen, onClose, onSaved }) {
       onSaved();
       onClose();
     } catch (e) {
-      setValidationError("Could not save: " + (e.response?.data?.message || e.message));
+      setValidationError("Could not save: " + (e.response?.data?.message || e.response?.data || e.message));
     } finally {
       setSaving(false);
     }
@@ -134,6 +147,10 @@ function AddTenantModal({ isOpen, onClose, onSaved }) {
           <div>
             <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Move-in Date</label>
             <input type="date" name="moveInDate" value={form.moveInDate} onChange={handleChange} className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all [color-scheme:light_dark]" />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Rent Due Date</label>
+            <input type="date" name="dueDate" value={form.dueDate} onChange={handleChange} className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all [color-scheme:light_dark]" />
           </div>
           <div>
             <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Property</label>
@@ -178,6 +195,206 @@ function AddTenantModal({ isOpen, onClose, onSaved }) {
   );
 }
 
+function EditTenantModal({ isOpen, onClose, tenant, onSaved }) {
+  const [form, setForm] = useState({
+    name: "", phone: "", email: "",
+    rentAmount: "", aadharNumber: "",
+    moveInDate: "", dueDate: "", property_id: "", roomId: "", status: "ACTIVE"
+  });
+  const [properties, setProperties] = useState([]);
+  const [rooms, setRooms] = useState([]);
+  const [loadingRooms, setLoadingRooms] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [validationError, setValidationError] = useState(null);
+
+  useEffect(() => {
+    if (isOpen && tenant) {
+      setForm({
+        name: tenant.name || "",
+        phone: tenant.phone || "",
+        email: tenant.email || "",
+        rentAmount: tenant.rent || tenant.rentAmount || "",
+        aadharNumber: tenant.aadhar || "",
+        moveInDate: tenant.moveInDate || "",
+        dueDate: tenant.dueDate || "",
+        property_id: tenant.property_id ? tenant.property_id.toString() : "",
+        roomId: tenant.roomId ? tenant.roomId.toString() : "",
+        status: tenant.status || "ACTIVE"
+      });
+      setValidationError(null);
+      
+      const landlordId = localStorage.getItem("landlordId");
+      if (landlordId) {
+        getPropertiesByLandlord(landlordId)
+          .then(data => {
+            setProperties(Array.isArray(data) ? data : []);
+          })
+          .catch(err => console.error("Failed to fetch properties", err));
+      }
+    }
+  }, [isOpen, tenant]);
+
+  useEffect(() => {
+    if (isOpen && form.property_id) {
+      fetchRooms(form.property_id);
+    }
+  }, [isOpen, form.property_id]);
+
+  async function fetchRooms(propertyId) {
+    if (!propertyId) { setRooms([]); return; }
+    setLoadingRooms(true);
+    try {
+      const data = await getRoomsOfProperty(propertyId);
+      // For editing: show vacant rooms PLUS the tenant's current assigned room
+      const allRooms = Array.isArray(data) ? data : [];
+      const selectableRooms = allRooms.filter(r => r.status === "VACANT" || String(r.id) === String(tenant?.roomId));
+      setRooms(selectableRooms);
+    } catch (e) {
+      console.error("Failed to fetch rooms", e);
+      setRooms([]);
+    } finally {
+      setLoadingRooms(false);
+    }
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+    if (name === "property_id") {
+      setForm(prev => ({ ...prev, roomId: "" }));
+    }
+    setValidationError(null);
+  };
+
+  async function handleSave() {
+    if (!form.name || !form.phone) {
+      setValidationError("Name and phone are required.");
+      return;
+    }
+    if (!form.dueDate) {
+      setValidationError("Rent due date is required.");
+      return;
+    }
+    if (!form.property_id) {
+      setValidationError("Please select a property.");
+      return;
+    }
+    setSaving(true);
+    setValidationError(null);
+    try {
+      const landlordId = localStorage.getItem("landlordId");
+      await updateTenant(tenant.id, {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        rent: parseFloat(form.rentAmount) || 0,
+        aadhar: form.aadharNumber,
+        moveInDate: form.moveInDate || null,
+        dueDate: form.dueDate || null,
+        moveOutDate: null,
+        landlord_id: parseInt(landlordId),
+        property_id: parseInt(form.property_id),
+        status: form.status,
+        roomId: form.roomId ? parseInt(form.roomId) : null
+      });
+      onSaved("Tenant updated successfully");
+      onClose();
+    } catch (e) {
+      let msg = "Could not save: " + e.message;
+      if (e.response?.data) {
+        const data = e.response.data;
+        if (typeof data === "string") msg = data;
+        else if (data.message) msg = data.message;
+        else if (typeof data === "object") {
+          const vals = Object.values(data);
+          if (vals.length > 0) msg = vals.join(", ");
+        }
+      }
+      setValidationError(msg);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="Edit Tenant" maxWidth="max-w-xl">
+      {validationError && (
+        <div className="mb-6 p-4 bg-brand-rust/5 border border-brand-rust/15 text-brand-rust rounded-xl text-xs font-mono">
+          {validationError}
+        </div>
+      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Full Name</label>
+          <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="Ramesh Gupta" className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all" />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Phone Number</label>
+          <input type="text" name="phone" value={form.phone} onChange={handleChange} placeholder="9876543210" className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all" />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Email</label>
+          <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="ramesh@example.com" className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all" />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Monthly Rent (₹)</label>
+          <input type="number" name="rentAmount" value={form.rentAmount} onChange={handleChange} placeholder="12000" className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all" />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Move-in Date</label>
+          <input type="date" name="moveInDate" value={form.moveInDate} onChange={handleChange} className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all [color-scheme:light_dark]" />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Rent Due Date</label>
+          <input type="date" name="dueDate" value={form.dueDate} onChange={handleChange} className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all [color-scheme:light_dark]" />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Status</label>
+          <select name="status" value={form.status} onChange={handleChange} className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all">
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Property</label>
+          <select name="property_id" value={form.property_id} onChange={handleChange} className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all">
+            <option value="">Select a property</option>
+            {properties.map(p => (
+              <option key={p.id} value={p.id}>
+                {p.name || p.type} — {p.city}
+              </option>
+            ))}
+          </select>
+        </div>
+        {rooms.length > 0 && (
+          <div>
+            <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Room Assignment</label>
+            <select name="roomId" value={form.roomId} onChange={handleChange} className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all">
+              <option value="">No specific room</option>
+              {rooms.map(r => (
+                <option key={r.id} value={r.id}>
+                  Room {r.roomNumber}{r.rent ? ` — ₹${Number(r.rent).toLocaleString("en-IN")}/mo` : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+        {loadingRooms && (
+          <div className="text-[10px] font-mono text-brand-chalk/60 animate-pulse">Loading rooms...</div>
+        )}
+        <div className="sm:col-span-2">
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Aadhaar Number</label>
+          <input type="text" name="aadharNumber" value={form.aadharNumber} onChange={handleChange} placeholder="1234-5678-9012" className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all" />
+        </div>
+      </div>
+      <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100 dark:border-slate-700">
+        <Button variant="secondary" onClick={onClose}>Cancel</Button>
+        <Button variant="primary" loading={saving} onClick={handleSave}>Save Changes</Button>
+      </div>
+    </Modal>
+  );
+}
+
 export default function Tenants() {
   const [tenants, setTenants] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -185,13 +402,25 @@ export default function Tenants() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [showAdd, setShowAdd] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+  const [selectedTenant, setSelectedTenant] = useState(null);
+  const [successToast, setSuccessToast] = useState(null);
 
-  async function load() {
+  const showToast = (msg) => {
+    setSuccessToast(msg);
+    setTimeout(() => setSuccessToast(null), 3000);
+  };
+
+  async function load(successMsg = null) {
     setLoading(true);
     try {
       const landlordId=localStorage.getItem("landlordId")
       const data = await getTenantsByLandlord(landlordId);
       setTenants(Array.isArray(data) ? data : []);
+      if (successMsg && typeof successMsg === "string") {
+        showToast(successMsg);
+      }
     } catch (e) {
       setError(e.message);
     } finally {
@@ -203,9 +432,9 @@ export default function Tenants() {
     const newStatus = (tenant.status || "").toUpperCase() === "ACTIVE" ? "INACTIVE" : "ACTIVE";
     try {
       await updateTenantStatus(tenant.id, newStatus);
-      load();
+      load(`Tenant status updated to ${newStatus}`);
     } catch (e) {
-      alert("Could not update status: " + e.message);
+      showToast("Could not update status: " + e.message);
     }
   }
 
@@ -250,7 +479,13 @@ export default function Tenants() {
       render: (t) => (
         <div>
           <p className="text-sm font-semibold text-brand-ink">{t.propertyAddress || "—"}</p>
-          <p className="text-[10px] font-mono text-brand-chalk bg-brand-plaster border border-brand-ink/5 rounded px-1.5 py-0.5 mt-0.5 inline-block">ID: {t.property_id}</p>
+          <div className="flex gap-2 items-center mt-1">
+            <span className="text-[10px] font-mono text-brand-chalk bg-brand-plaster border border-brand-ink/5 rounded px-1.5 py-0.5">ID: {t.property_id}</span>
+            {t.roomNumber && <span className="text-[10px] font-mono text-brand-brass bg-brand-brass/10 border border-brand-brass/20 rounded px-1.5 py-0.5">Room {t.roomNumber}</span>}
+          </div>
+          {t.dueDate && (
+            <p className="text-xs font-semibold text-brand-brass mt-1">Due: {formatDueDate(t.dueDate)}</p>
+          )}
         </div>
       )
     },
@@ -285,11 +520,40 @@ export default function Tenants() {
           </button>
         );
       }
+    },
+    {
+      header: "",
+      render: (t) => (
+        <div className="flex gap-2">
+          <button
+            onClick={() => {
+              setSelectedTenant(t);
+              setShowProfile(true);
+            }}
+            className="text-xs font-mono uppercase tracking-widest text-brand-brass hover:text-amber-700 transition-colors px-2.5 py-1.5 rounded-lg border border-amber-200/60 hover:border-amber-400 bg-amber-50/50 hover:bg-amber-50">
+            View
+          </button>
+          <button
+            onClick={() => {
+              setSelectedTenant(t);
+              setShowEdit(true);
+            }}
+            className="text-xs font-mono uppercase tracking-widest text-slate-500 hover:text-brand-ink transition-colors px-2.5 py-1.5 rounded-lg border border-slate-200 hover:border-slate-400">
+            Edit
+          </button>
+        </div>
+      )
     }
   ];
 
   return (
     <div className="space-y-8 animate-fade-in">
+      {successToast && (
+        <div className="fixed top-24 right-8 bg-brand-forest text-brand-plaster font-semibold text-sm px-6 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 z-50 animate-bounce">
+          <span>✅</span>
+          <span>{successToast}</span>
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 pb-6 border-b border-brand-ink/10">
         <div>
           <h1 className="text-3xl font-display font-bold text-brand-ink tracking-tight">Tenants</h1>
@@ -339,7 +603,9 @@ export default function Tenants() {
         )}
       </Card>
 
-      <AddTenantModal isOpen={showAdd} onClose={() => setShowAdd(false)} onSaved={load} />
+      <AddTenantModal isOpen={showAdd} onClose={() => setShowAdd(false)} onSaved={(msg) => load(msg || "Tenant added successfully")} />
+      <EditTenantModal isOpen={showEdit} onClose={() => setShowEdit(false)} tenant={selectedTenant} onSaved={load} />
+      <TenantProfileModal isOpen={showProfile} onClose={() => setShowProfile(false)} tenant={selectedTenant} />
     </div>
   );
 }

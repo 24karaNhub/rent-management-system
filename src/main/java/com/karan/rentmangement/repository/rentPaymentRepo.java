@@ -18,6 +18,7 @@ import com.karan.rentmangement.model.rentPayment;
 public interface rentPaymentRepo extends JpaRepository<rentPayment, Integer> {
      List<rentPayment> findByProperty(Property property);
      List<rentPayment> findByTenant(Tenant tenant);
+     List<rentPayment> findByTenantOrderByDateDesc(Tenant tenant);
      List<rentPayment> findByLandlord(Landlord landlord);
      List<rentPayment> findByLandlordId(int landlordId);
      @Modifying

@@ -61,6 +61,8 @@ public class TenantService {
             dto.setRoomNumber(tenant.getRoom().getRoomNumber());
         }
 
+        dto.setDueDate(tenant.getDueDate());
+
         return dto;
     }
 
@@ -71,6 +73,13 @@ public class TenantService {
         if (payment.getMonth() != null) dto.setMonth(payment.getMonth().toString());
         if (payment.getDate() != null) dto.setDate(payment.getDate().toString());
         dto.setStatus(payment.getStatus());
+        if (payment.getProperty() != null) {
+            dto.setPropertyId(payment.getProperty().getId());
+        }
+        if (payment.getTenant() != null) {
+            dto.setTenantId(payment.getTenant().getid());
+            dto.setTenantName(payment.getTenant().getName());
+        }
         return dto;
     }
 
@@ -91,6 +100,13 @@ public class TenantService {
         tenant.setRent(dto.getRent());
         tenant.setMoveInDate(dto.getMoveInDate());
         tenant.setMoveOutDate(dto.getMoveOutDate());
+        if (dto.getDueDate() == null) {
+            throw new IllegalArgumentException("Rent due date is required");
+        }
+        if (dto.getMoveInDate() != null && dto.getDueDate().isBefore(dto.getMoveInDate())) {
+            throw new IllegalArgumentException("Rent due date cannot be before move-in date");
+        }
+        tenant.setDueDate(dto.getDueDate());
         tenant.setStatus(dto.getStatus() != null ? dto.getStatus() : "ACTIVE");
 
         Landlord landlord = landlordRepo.findById(dto.getLandlord_id())
@@ -144,6 +160,14 @@ public class TenantService {
         existing.setEmail(dto.getEmail());
         existing.setPhone(dto.getPhone());
         existing.setRent(dto.getRent());
+        if (dto.getDueDate() == null) {
+            throw new IllegalArgumentException("Rent due date is required");
+        }
+        if (dto.getMoveInDate() != null && dto.getDueDate().isBefore(dto.getMoveInDate())) {
+            throw new IllegalArgumentException("Rent due date cannot be before move-in date");
+        }
+        existing.setDueDate(dto.getDueDate());
+
         if (dto.getStatus() != null) {
             existing.setStatus(dto.getStatus());
         }
@@ -235,7 +259,7 @@ public class TenantService {
         Tenant tenant = tenantRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tenant not found"));
 
-        List<rentPayment> payments = rentpaymentRepo.findByTenant(tenant);
+        List<rentPayment> payments = rentpaymentRepo.findByTenantOrderByDateDesc(tenant);
         return payments.stream().map(this::toPaymentDTO).collect(Collectors.toList());
     }
 }

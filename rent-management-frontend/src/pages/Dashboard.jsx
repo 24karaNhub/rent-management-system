@@ -438,7 +438,7 @@ export default function Dashboard() {
       setAllPayments(paymentsList);
       
       setRecentPayments([...paymentsList]
-        .sort((a, b) => new Date(b.paidDate || b.dueDate) - new Date(a.paidDate || a.dueDate))
+        .sort((a, b) => new Date(b.date || b.paidDate || b.dueDate) - new Date(a.date || a.paidDate || a.dueDate))
         .slice(0, 5)
       );
 

@@ -40,6 +40,9 @@ private LocalDate moveOutDate;
 private String aadhaar;
 private String status = "ACTIVE";
 
+    @Column(name = "due_date")
+    private LocalDate dueDate;
+
     public Tenant(String name, String email, String phone , Long rent, LocalDate moveInDate, LocalDate moveOutDate, String aadhaar) {
         this.name=name;
         this.email=email;
@@ -152,5 +155,13 @@ private String status = "ACTIVE";
 
     public void setRoom(Room room) {
         this.room = room;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
     }
 }
