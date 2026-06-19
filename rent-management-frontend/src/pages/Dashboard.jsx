@@ -5,7 +5,8 @@ import {
   getTenantsByLandlord, 
   getPaymentsByLandlord, 
   createPayment,
-  importFromExcel
+  importFromExcel,
+  getTenantsOfProperty
 } from "../services/api";
 import { Card } from "../components/ui/Card";
 import { Table } from "../components/ui/Table";
@@ -122,51 +123,228 @@ function StatCard({ label, value, sub, icon, highlight = false, propertiesCount 
 }
 
 function AddPaymentModal({ isOpen, onClose, onSaved }) {
-  const [form, setForm] = useState({ tenantName: "", propertyName: "", amount: "", status: "PAID", dueDate: "" });
+  const [propertiesList, setPropertiesList] = useState([]);
+  const [tenantsList, setTenantsList] = useState([]);
+  const [form, setForm] = useState({
+    propertyId: "",
+    tenantId: "",
+    rent: "",
+    status: "PAID",
+    month: "",
+    date: ""
+  });
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  // Set default month and date when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setError(null);
+      
+      const today = new Date();
+      const monthIndex = today.getMonth(); // 0-11
+      const months = [
+        "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
+        "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
+      ];
+      const defaultMonth = months[monthIndex];
+      
+      // format YYYY-MM-DD
+      const dd = String(today.getDate()).padStart(2, '0');
+      const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+      const yyyy = today.getFullYear();
+      const defaultDate = `${yyyy}-${mm}-${dd}`;
+
+      setForm({
+        propertyId: "",
+        tenantId: "",
+        rent: "",
+        status: "PAID",
+        month: defaultMonth,
+        date: defaultDate
+      });
+      setTenantsList([]);
+
+      // Fetch landlord properties
+      const landlordId = localStorage.getItem("landlordId");
+      if (landlordId) {
+        getPropertiesByLandlord(landlordId)
+          .then(data => setPropertiesList(data || []))
+          .catch(err => {
+            console.error("Error fetching properties:", err);
+            setError("Could not load properties. Please try again.");
+          });
+      } else {
+        setError("Please login first.");
+      }
+    }
+  }, [isOpen]);
+
+  const handleChange = (e) => {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handlePropertyChange = async (e) => {
+    const propId = e.target.value;
+    setForm(prev => ({ ...prev, propertyId: propId, tenantId: "", rent: "" }));
+    setTenantsList([]);
+    
+    if (propId) {
+      try {
+        const tenants = await getTenantsOfProperty(propId);
+        setTenantsList(tenants || []);
+      } catch (err) {
+        console.error("Error fetching tenants:", err);
+        setError("Could not load tenants for selected property.");
+      }
+    }
+  };
+
+  const handleTenantChange = (e) => {
+    const tId = e.target.value;
+    const selectedTenant = tenantsList.find(t => String(t.id) === String(tId));
+    setForm(prev => ({
+      ...prev,
+      tenantId: tId,
+      rent: selectedTenant ? (selectedTenant.rent || "") : ""
+    }));
+  };
 
   async function handleSave() {
+    setError(null);
+    const landlordId = localStorage.getItem("landlordId");
+    if (!landlordId) {
+      setError("Please login first.");
+      return;
+    }
+
+    if (!form.propertyId) {
+      setError("Property is required.");
+      return;
+    }
+    if (!form.tenantId) {
+      setError("Tenant is required.");
+      return;
+    }
+    if (!form.rent || parseFloat(form.rent) <= 0) {
+      setError("Amount must be greater than 0.");
+      return;
+    }
+
     setSaving(true);
     try {
-      await createPayment({ ...form, amount: parseFloat(form.amount) || 0 });
-      onSaved();
+      const payload = {
+        rent: parseFloat(form.rent),
+        month: form.month,
+        date: form.date,
+        status: form.status,
+        tenantId: parseInt(form.tenantId),
+        propertyId: parseInt(form.propertyId),
+        landlordId: parseInt(landlordId)
+      };
+      
+      await createPayment(payload);
+      onSaved("Payment added successfully");
       onClose();
-    } catch (e) { 
-      alert("Could not save: " + e.message); 
-    } finally { 
-      setSaving(false); 
+    } catch (err) {
+      console.error("Save payment error:", err);
+      // Extract backend error message
+      let msg = "Something went wrong while creating the payment. Please try again.";
+      if (err.response?.data) {
+        const data = err.response.data;
+        if (typeof data === "string") {
+          msg = data;
+        } else if (data.message) {
+          msg = data.message;
+        } else if (typeof data === "object") {
+          const values = Object.values(data);
+          if (values.length > 0) {
+            msg = values.join(", ");
+          }
+        }
+      } else if (err.message) {
+        msg = err.message;
+      }
+      setError(msg);
+    } finally {
+      setSaving(false);
     }
   }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Add New Payment" maxWidth="max-w-md">
       <div className="space-y-5">
-        <div>
-          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Tenant Name</label>
-          <input 
-            type="text" name="tenantName" placeholder="e.g. Ramesh Gupta"
-            value={form.tenantName} onChange={handleChange} 
-            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400"
-          />
-        </div>
+        {/* Error Banner */}
+        {error && (
+          <div className="p-4 bg-brand-rust/5 border border-brand-rust/15 text-brand-rust rounded-2xl text-xs font-mono shadow-sm animate-fade-in">
+            <span className="font-semibold">⚠️ Error:</span> {error}
+          </div>
+        )}
+
         <div>
           <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Property / Unit</label>
-          <input 
-            type="text" name="propertyName" placeholder="e.g. Flat 2B"
-            value={form.propertyName} onChange={handleChange} 
-            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400"
-          />
+          <select 
+            name="propertyId" 
+            value={form.propertyId} 
+            onChange={handlePropertyChange}
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all"
+          >
+            <option value="">Select Property ▼</option>
+            {propertiesList.map(p => (
+              <option key={p.id} value={p.id}>{p.name || p.address}</option>
+            ))}
+          </select>
         </div>
+
+        <div>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Tenant Name</label>
+          <select 
+            name="tenantId" 
+            value={form.tenantId} 
+            onChange={handleTenantChange}
+            disabled={!form.propertyId}
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            <option value="">{form.propertyId ? "Select Tenant ▼" : "Select property first"}</option>
+            {tenantsList.map(t => (
+              <option key={t.id} value={t.id}>{t.name} (Phone: {t.phone})</option>
+            ))}
+          </select>
+          {form.propertyId && tenantsList.length === 0 && (
+            <p className="text-[10px] text-brand-rust mt-1 font-mono">No tenants found for this property.</p>
+          )}
+        </div>
+
         <div>
           <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Amount (₹)</label>
           <input 
-            type="number" name="amount" placeholder="e.g. 12000"
-            value={form.amount} onChange={handleChange} 
+            type="number" name="rent" placeholder="e.g. 12000"
+            value={form.rent} onChange={handleChange} 
             className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all placeholder:text-slate-400"
           />
         </div>
+
+        <div>
+          <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Month</label>
+          <select 
+            name="month" value={form.month} onChange={handleChange}
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all"
+          >
+            <option value="JANUARY">January</option>
+            <option value="FEBRUARY">February</option>
+            <option value="MARCH">March</option>
+            <option value="APRIL">April</option>
+            <option value="MAY">May</option>
+            <option value="JUNE">June</option>
+            <option value="JULY">July</option>
+            <option value="AUGUST">August</option>
+            <option value="SEPTEMBER">September</option>
+            <option value="OCTOBER">October</option>
+            <option value="NOVEMBER">November</option>
+            <option value="DECEMBER">December</option>
+          </select>
+        </div>
+
         <div>
           <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Status</label>
           <select 
@@ -178,11 +356,12 @@ function AddPaymentModal({ isOpen, onClose, onSaved }) {
             <option value="OVERDUE">Overdue</option>
           </select>
         </div>
+
         <div>
           <label className="block text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 mb-1.5">Due / Paid Date</label>
           <input 
-            type="date" name="dueDate"
-            value={form.dueDate} onChange={handleChange} 
+            type="date" name="date"
+            value={form.date} onChange={handleChange} 
             className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm transition-all [color-scheme:light_dark]"
           />
         </div>
@@ -206,6 +385,14 @@ export default function Dashboard() {
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [successToast, setSuccessToast] = useState(null);
+
+  const showToast = (msg) => {
+    setSuccessToast(msg);
+    setTimeout(() => {
+      setSuccessToast(null);
+    }, 3000);
+  };
   
   const fileInputRef = useRef(null);
 
@@ -440,6 +627,12 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8 animate-fade-in">
+      {successToast && (
+        <div className="fixed top-24 right-8 bg-brand-forest text-brand-plaster font-semibold text-sm px-6 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 z-50 animate-bounce">
+          <span>✅</span>
+          <span>{successToast}</span>
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 pb-6 border-b border-brand-ink/10">
         <div>
           <h1 className="text-3xl font-display font-bold text-brand-ink tracking-tight">Executive Dashboard</h1>
@@ -583,7 +776,10 @@ export default function Dashboard() {
       <AddPaymentModal 
         isOpen={showModal} 
         onClose={() => setShowModal(false)} 
-        onSaved={loadData} 
+        onSaved={(msg) => {
+          loadData();
+          showToast(msg || "Payment added successfully");
+        }} 
       />
     </div>
   );
